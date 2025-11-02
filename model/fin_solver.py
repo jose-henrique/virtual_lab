@@ -13,6 +13,15 @@ class FinSolver:
         properties = self.__load_material_properties(data["fin_material"])
         return self.__generate_array(data, properties)
     
+    def find_local_temperature(self, array, env_temperature, base_temperature):
+        array_with_temp = []
+        for element in array:
+            local_temp = ((base_temperature - env_temperature)*element["temp_distribuition"]) + env_temperature
+            element["local_temp"] = local_temp
+            array_with_temp.append(element)
+        
+        return array_with_temp
+    
     def __generate_array(self, data, properties):
         length = data["fin_length"]
         node_length = length/data["node_count"]

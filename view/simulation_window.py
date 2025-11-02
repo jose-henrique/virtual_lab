@@ -56,20 +56,23 @@ class SimulationWindow:
             {
                 "fin_geometry": self.__convert_geometry_type(dpg.get_value("geometry_type")),
                 "solver_method": self.__convert_method(dpg.get_value("solve_method")),
+                "base_temperature": dpg.get_value("base_temperature"),
+                "env_temperature": dpg.get_value("env_temperature"),
                 "data": {    
                     "convection_coefficient": dpg.get_value("convection_coefficient"),
                     "dimensions": {"radius": dpg.get_value("radius")},
                     "fin_length": dpg.get_value("length"),
                     "node_count": dpg.get_value("nodes"),
-                    "fin_material": dpg.get_value("material"),
-                    "base_temperature": dpg.get_value("base_temperature")
+                    "fin_material": dpg.get_value("material")
                 }
             }
         )
         self.__success_callback(data_analyses)
         
     def __success_callback(self, data):
-        print(data)
+        self.canva.color_fin(data, dpg.get_value("base_temperature"))
+        #print(data)
+        #print("helllo")
     
     def __convert_method(self, method):
         if method == "Infinity Fin":

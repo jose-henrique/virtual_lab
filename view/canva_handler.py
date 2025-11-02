@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+from model.utils import Utils
 
 class CanvaHandler:
     def __init__(self,parent, width, height, offset_x,offset_y):
@@ -9,6 +10,7 @@ class CanvaHandler:
         self.parent = parent
         self.fin_width = 400
         self.fin_height = 60
+        self.ref = [self.offset_x, self.offset_y]
     
     
     def initial_draw(self):
@@ -34,6 +36,23 @@ class CanvaHandler:
         pos_x = self.vertical_dimension_pos + 10
         dpg.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent="canva", tag="fin_height_label")
         
+    def color_fin(self, temp_distribuition_array, base_temperature):
+        utils = Utils()
+        nodes = len(temp_distribuition_array)
+        node_height = self.fin_height
+        node_pos_y = self.ref[1] + ((self.height/2)-(node_height/2))
+        node_pos_x = self.ref[0] + 69
+        node_width = self.fin_width / nodes
+        for element in temp_distribuition_array:
+            color_ratio = element["local_temp"]/base_temperature
+            hue = ((360-180)*color_ratio) + 180
+            rgb_color = utils.hsl_to_rgb(hue, 77,59)
+            dpg.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=rgb_color, fill=rgb_color, parent="canva")
+            node_pos_x += node_width
+            
+
+        
+        
     def __draw_base(self, ref):
         rect_height = 90
         rect_width = 20
@@ -48,7 +67,6 @@ class CanvaHandler:
         pos_y_rect = ref[1] + ((self.height/2)-(rect_height/2))
         dpg.draw_rectangle([pos_x_rect, pos_y_rect], [(pos_x_rect + rect_width), (pos_y_rect + rect_height)], color=(255, 255, 255))
         self.__draw_dimensions_lines(ref,pos_x_rect,pos_y_rect,rect_height)
-    
     
     def __draw_dimensions_lines(self, ref, fin_x_position, fin_y_position, fin_height):
         self.first_vertical_bar_pos_x = ref[0] + 69
