@@ -32,7 +32,7 @@ class SimulationWindow:
             pos=[0,20],
             parent=parent):
                 with dpg.collapsing_header(label=_("Analyse Type"), default_open=True):
-                    dpg.add_combo([_("Fins"), _("Forced Convection"), _("Natural Convection"), _("Conduction"), _("Heat Changer")], default_value=_("Select Analyse"))
+                    dpg.add_combo([_("Fins"), _("Forced Convection"), _("Natural Convection"), _("Conduction")], default_value=_("Select Analyse"))
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
                     dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag="geometry_type")
                     dpg.add_input_float(label=_("Radius (mm)"), tag="radius", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)

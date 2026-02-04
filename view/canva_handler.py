@@ -47,7 +47,7 @@ class CanvaHandler:
             color_ratio = element["local_temp"]/base_temperature
             hue = ((360-180)*color_ratio) + 180
             rgb_color = utils.hsl_to_rgb(hue, 77,59)
-            dpg.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=rgb_color, fill=rgb_color, parent="canva")
+            dpg.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="canva")
             node_pos_x += node_width
             
 
