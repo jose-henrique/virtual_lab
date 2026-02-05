@@ -67,7 +67,11 @@ class SimulationWindow:
                 }
             }
         )
-        self.__success_callback(data_analyses)
+        
+        if data_analyses['status'] == 0:
+            self.__success_callback(data_analyses)
+        else:
+            print(data_analyses['errors'])
         
     def __success_callback(self, data):
         self.canva.color_fin(data["temperatures"], data["base_temperature"])

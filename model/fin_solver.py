@@ -6,13 +6,19 @@ class FinSolver:
     def __init__(self, fin_geometry, solver_method):
         self.fin_geometry = fin_geometry
         self.solver_method = solver_method
+        self.errors = []
 
     
     def find_temp_distribuition(self, data):
         self.__basic_validation(data)
+        self.__validations(data)
+        if len(self.errors) > 0:
+            return False
+        
         properties = self.__load_material_properties(data["fin_material"])
         return self.__generate_array(data, properties)
-    
+            
+        
     def find_local_temperature(self, array, env_temperature, base_temperature):
         array_with_temp = []
         for element in array:
@@ -106,6 +112,24 @@ class FinSolver:
     def __load_material_properties(self, material):
         properties = PropertiesGetter()
         return properties.get_material(material)
+    
+    def __validations(self, data):
+        self._validate_dimensions(data)
+    
+    
+    def _validate_dimensions(self, data):
+        if self.fin_geometry == 1:
+            if "a" not in data["dimensions"] or "b" not in data["dimensions"]:
+                self.errors.append(["Dimensions a AND b must be preset"])
+                return
+            if data["dimensions"]["a"] == 0 or data["dimensions"]["a"] == 0:
+                self.errors.append(["Dimensions a AND b must greather than 0"])
+        elif self.fin_geometry == 2:
+            if "radius" not in data["dimensions"]:
+                self.errors.append(["Radius must be preset"])
+                return
+            if data["dimensions"]["radius"] == 0:
+                self.errors.append(["Radius must greather than 0"])
 
 
 """
