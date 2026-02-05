@@ -19,4 +19,4 @@ class HomeView:
             dpg.add_text("Simulation Content Here")
         dpg.set_item_width("simulation_window", 800)
         dpg.set_item_height("simulation_window", 400)
-        dpg.set_item_pos("simulation_window", [200, 200])
+        dpg.set_item_pos("simulation_window", [200, 201])
