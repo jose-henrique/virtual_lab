@@ -1,5 +1,7 @@
 import dearpygui.dearpygui as dpg
 from model.utils import Utils
+import matplotlib.cm as cm
+import matplotlib.colors as colors
 
 class CanvaHandler:
     def __init__(self,parent, width, height, offset_x,offset_y):
@@ -43,10 +45,12 @@ class CanvaHandler:
         node_pos_y = self.ref[1] + ((self.height/2)-(node_height/2))
         node_pos_x = self.ref[0] + 69
         node_width = self.fin_width / nodes
+        temperatures = [item['local_temp'] for item in temp_distribuition_array]
+        normalized = colors.Normalize(vmin=min(temperatures), vmax=max(temperatures))
+        cmap = cm.get_cmap('coolwarm')
+        
         for element in temp_distribuition_array:
-            color_ratio = element["local_temp"]/base_temperature
-            hue = ((360-180)*color_ratio) + 180
-            rgb_color = utils.hsl_to_rgb(hue, 77,59)
+            rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
             dpg.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="canva")
             node_pos_x += node_width
             
