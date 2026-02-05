@@ -70,9 +70,7 @@ class SimulationWindow:
         self.__success_callback(data_analyses)
         
     def __success_callback(self, data):
-        self.canva.color_fin(data, dpg.get_value("base_temperature"))
-        #print(data)
-        #print("helllo")
+        self.canva.color_fin(data["temperatures"], data["base_temperature"])
     
     def __convert_method(self, method):
         if method == "Infinity Fin":

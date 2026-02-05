@@ -1,5 +1,4 @@
 import dearpygui.dearpygui as dpg
-from model.utils import Utils
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 
@@ -39,7 +38,6 @@ class CanvaHandler:
         dpg.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent="canva", tag="fin_height_label")
         
     def color_fin(self, temp_distribuition_array, base_temperature):
-        utils = Utils()
         nodes = len(temp_distribuition_array)
         node_height = self.fin_height
         node_pos_y = self.ref[1] + ((self.height/2)-(node_height/2))
