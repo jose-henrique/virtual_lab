@@ -18,8 +18,7 @@ class FinAnalysesController:
             temp_array = solver.find_local_temperature(temp_distribuition, 25, 80)
             return {'temperatures': temp_array, 'base_temperature': 80, 'status': 0}
         else:
-            print("erro")
-            return {'errors': solver.errors, 'base_temperature': 80, 'status': -1}
+            return {'errors': solver.errors, 'status': -1}
         
         
     def __clean_data(self, data):

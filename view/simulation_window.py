@@ -3,6 +3,7 @@ from gettext import gettext as _
 from model.material_property_getter import PropertiesGetter
 from controller.fin_analyses_controller import FinAnalysesController
 from view.canva_handler import CanvaHandler
+from view.error_modal import ErrorModal
 
 class SimulationWindow:
     def __init__(self):
@@ -71,10 +72,15 @@ class SimulationWindow:
         if data_analyses['status'] == 0:
             self.__success_callback(data_analyses)
         else:
-            print(data_analyses['errors'])
+            self.__error_callback(data_analyses['errors'])
         
     def __success_callback(self, data):
         self.canva.color_fin(data["temperatures"], data["base_temperature"])
+    
+    def __error_callback(self, errors):
+        error_modal = ErrorModal()
+        error_modal.show_errors(errors)
+        #self.canva.color_fin(data["temperatures"], data["base_temperature"])    
     
     def __convert_method(self, method):
         if method == "Infinity Fin":
