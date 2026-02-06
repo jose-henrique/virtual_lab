@@ -1,8 +1,9 @@
 import math
 import pickle
 from model.material_property_getter import PropertiesGetter
+from model.data_validation import DataValidation
 
-class FinSolver:
+class FinSolver(DataValidation):
     def __init__(self, fin_geometry, solver_method):
         self.fin_geometry = fin_geometry
         self.solver_method = solver_method
@@ -115,21 +116,24 @@ class FinSolver:
     
     def __validations(self, data):
         self._validate_dimensions(data)
+        self.validates("Length",data.get("fin_length"), validation="presence")
+        self.validates("Length",data.get("fin_length"), validation="greather_than",base_number=0)
+        self.validates("Convection Coefficient",data.get("convection_coefficient"), validation="greather_than",base_number=0)
+        self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=0)
+        self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials())
+        
     
     
     def _validate_dimensions(self, data):
         if self.fin_geometry == 1:
-            if "a" not in data["dimensions"] or "b" not in data["dimensions"]:
-                self.errors.append(["Dimensions a AND b must be preset"])
-                return
-            if data["dimensions"]["a"] == 0 or data["dimensions"]["a"] == 0:
-                self.errors.append(["Dimensions a AND b must greather than 0"])
+            self.validates("Dimension a",data["dimensions"].get("a"), validation="presence")
+            self.validates("Dimension b",data["dimensions"].get("b"), validation="presence")
+        
+            self.validates("Dimension a",data["dimensions"].get("a"),base_number=0, validation="greather_than")
+            self.validates("Dimension b",data["dimensions"].get("b"),base_number=0, validation="greather_than")
         elif self.fin_geometry == 2:
-            if "radius" not in data["dimensions"]:
-                self.errors.append(["Radius must be preset"])
-                return
-            if data["dimensions"]["radius"] == 0:
-                self.errors.append(["Radius must greather than 0"])
+            self.validates("Radius",data["dimensions"].get("radius"), validation="presence")
+            self.validates("Radius",data["dimensions"].get("radius"),base_number=0, validation="greather_than")
 
 
 """
