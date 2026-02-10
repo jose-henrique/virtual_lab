@@ -37,6 +37,10 @@ class ErrorModal:
         for idx, error in enumerate(errors):
             text_name = (f"text_{idx}")
             dpg.add_text(error, parent=self.window_name, tag=text_name)
+            dpg.split_frame()
+            text_sizes = dpg.get_item_state(text_name)['rect_size']
+            window_width = dpg.get_item_state(self.window_name)['rect_size'][0]
+            dpg.set_item_pos(text_name,[((window_width - text_sizes[0]) /2) - 12, ((text_sizes[1] + 20) * idx) + 50])
     
     def __close_window(self, sender, app_data, user_data):
         dpg.delete_item(self.window_name)
