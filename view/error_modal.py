@@ -29,18 +29,18 @@ class ErrorModal:
             pos=[200,20]) as window:
                 self.__render_errors(errors_array)
                 dpg.add_button(label="OK", width=75, pos=[self.width_window - 80, self.height_window - 40], user_data=window, callback=self.__close_window)
-            dpg.bind_item_theme(self.window_name, red_theme)
-            dpg.bind_item_font(self.window_name, loadedFont)
+                dpg.bind_item_theme(self.window_name, red_theme)
+                dpg.bind_item_font(self.window_name, loadedFont)
 
     
     def __render_errors(self, errors):
         for idx, error in enumerate(errors):
             text_name = (f"text_{idx}")
-            dpg.add_text(error, parent=self.window_name, tag=text_name)
+            dpg.add_text(error, parent=self.window_name, tag=text_name, wrap= self.width_window - 25)
             dpg.split_frame()
             text_sizes = dpg.get_item_state(text_name)['rect_size']
             window_width = dpg.get_item_state(self.window_name)['rect_size'][0]
             dpg.set_item_pos(text_name,[((window_width - text_sizes[0]) /2) - 12, ((text_sizes[1] + 20) * idx) + 50])
     
     def __close_window(self, sender, app_data, user_data):
-        dpg.delete_item(self.window_name)
+        dpg.configure_item(self.window_name, show=False)

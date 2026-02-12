@@ -24,12 +24,12 @@ class DataValidation:
     
     @default_message(lambda data, name: f"{name} must be present")    
     def __presence_validation(self, data, name, message=None):
-        if data is None:
+        if data is None or (not isinstance(data, (float)) and not data):
             self.errors.append(message)
     
     @default_message(lambda data, base_number, name: f"{name} must be greather than {base_number}")
     def __number_greather_than(self, data, base_number, name, message=None):
-        if data is None :
+        if data is None:
             return
         if data <= base_number:
             self.errors.append(message)

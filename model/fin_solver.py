@@ -11,6 +11,7 @@ class FinSolver(DataValidation):
 
     
     def find_temp_distribuition(self, data):
+        self.errors = []
         self.__basic_validation(data)
         self.__validations(data)
         if len(self.errors) > 0:
@@ -21,7 +22,11 @@ class FinSolver(DataValidation):
             
         
     def find_local_temperature(self, array, env_temperature, base_temperature):
+        self.errors = []
         array_with_temp = []
+        self.__validations_local_temperature(array, env_temperature, base_temperature)
+        if len(self.errors) > 0:
+            return False
         for element in array:
             local_temp = ((base_temperature - env_temperature)*element["temp_distribuition"]) + env_temperature
             element["local_temp"] = local_temp
@@ -122,8 +127,6 @@ class FinSolver(DataValidation):
         self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=0)
         self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials())
         
-    
-    
     def _validate_dimensions(self, data):
         if self.fin_geometry == 1:
             self.validates("Dimension a",data["dimensions"].get("a"), validation="presence")
@@ -135,6 +138,11 @@ class FinSolver(DataValidation):
             self.validates("Radius",data["dimensions"].get("radius"), validation="presence")
             self.validates("Radius",data["dimensions"].get("radius"),base_number=0, validation="greather_than")
 
+    def __validations_local_temperature(self, array, env_temperature, base_temperature):
+        print(array)
+        self.validates("Elements array", array, validation="presence", message="The data about the problem must be provided")
+        self.validates("Enviroment Temperature", env_temperature, validation="presence")
+        self.validates("Base Temperature", base_temperature, validation="presence")
 
 """
 data_sample = {
