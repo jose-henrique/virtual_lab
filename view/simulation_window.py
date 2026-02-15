@@ -80,7 +80,6 @@ class SimulationWindow:
     def __error_callback(self, errors):
         error_modal = ErrorModal()
         error_modal.show_errors(errors)
-        #self.canva.color_fin(data["temperatures"], data["base_temperature"])    
     
     def __convert_method(self, method):
         if method == "Infinity Fin":
