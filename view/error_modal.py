@@ -7,10 +7,13 @@ class ErrorModal:
         self.window_name = "error_modal"
         self.width_window = 500
         self.height_window = 250
+        self.pos_x = 0
+        self.pos_y = 0
     
     def show_errors(self, errors_array):
+        self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
-            dpg.configure_item(self.window_name, show=True)
+            dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
             self.__render_errors(errors_array)
         else:
             font_loader = FontLoader(font_size=24)
@@ -27,7 +30,7 @@ class ErrorModal:
             height=self.height_window,
             modal=True,
             no_resize=True,
-            pos=[200,20]) as window:
+            pos=[self.pos_x,self.pos_y]) as window:
                 self.__render_errors(errors_array)
                 dpg.add_button(label="OK", width=75, pos=[self.width_window - 80, self.height_window - 40], user_data=window, callback=self.__close_window)
                 dpg.bind_item_theme(self.window_name, red_theme)
@@ -51,3 +54,9 @@ class ErrorModal:
         children = dpg.get_item_children(self.window_name, slot=1)
         for child in children:
             dpg.delete_item(child)
+            
+    def __calculate_center_position(self):
+        viewport_width = dpg.get_viewport_client_width()
+        viewport_height = dpg.get_viewport_client_height()
+        self.pos_x = (viewport_width // 2) - (self.width_window // 2)
+        self.pos_y = (viewport_height // 2) - (self.height_window // 2)
