@@ -120,11 +120,13 @@ class FinSolver(DataValidation):
         return properties.get_material(material)
     
     def __validations(self, data):
-        self._validate_dimensions(data)
+        self.validates("Solver",self.solver_method, validation="presence", message="Solver Method Must Be Selected")
+        self.validates("Geometry",self.fin_geometry, validation="presence")
         self.validates("Length",data.get("fin_length"), validation="presence")
+        self._validate_dimensions(data)
         self.validates("Length",data.get("fin_length"), validation="greather_than",base_number=0)
         self.validates("Convection Coefficient",data.get("convection_coefficient"), validation="greather_than",base_number=0)
-        self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=0)
+        self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=9)
         self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials())
         
     def _validate_dimensions(self, data):
@@ -139,7 +141,6 @@ class FinSolver(DataValidation):
             self.validates("Radius",data["dimensions"].get("radius"),base_number=0, validation="greather_than")
 
     def __validations_local_temperature(self, array, env_temperature, base_temperature):
-        print(array)
         self.validates("Elements array", array, validation="presence", message="The data about the problem must be provided")
         self.validates("Enviroment Temperature", env_temperature, validation="presence")
         self.validates("Base Temperature", base_temperature, validation="presence")
