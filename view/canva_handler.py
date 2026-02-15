@@ -47,9 +47,10 @@ class CanvaHandler:
         normalized = colors.Normalize(vmin=min(temperatures), vmax=max(temperatures))
         cmap = cm.get_cmap('coolwarm')
         
-        for element in temp_distribuition_array:
+        for i, element in enumerate(temp_distribuition_array):
             rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
             dpg.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="canva")
+            self.__draw_tooltip(element["local_temp"], i, node_pos_x, node_pos_y, node_width, node_height)
             node_pos_x += node_width
             
 
@@ -88,3 +89,34 @@ class CanvaHandler:
         dpg.draw_line([horizontal_bars_x, self.first_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.first_horizontal_bar_pos_y], color=(255, 255, 255))
         dpg.draw_line([horizontal_bars_x, self.second_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.second_horizontal_bar_pos_y], color=(255, 255, 255))
         dpg.draw_line([self.vertical_dimension_pos, self.first_horizontal_bar_pos_y], [self.vertical_dimension_pos, self.second_horizontal_bar_pos_y], color=(255, 255, 255))
+        
+    
+    def __draw_tooltip(self, temperature, idx, x, y, width, height):
+        if dpg.does_item_exist(f"rect_btn_{idx}"):
+            self.__update_tooltip(idx, temperature)
+        else:
+            self.__create_tooltip(temperature, idx, x, y, width, height)
+        
+            
+    def __create_tooltip(self, temperature, idx, x, y, width, height):
+        dpg.add_button(
+                    parent=self.parent,
+                    label="", 
+                    pos=[x, y], 
+                    width=width, 
+                    height=height, 
+                    tag=f"rect_btn_{idx}"
+                )
+        with dpg.theme() as invisible_btn_theme:
+            with dpg.theme_component(dpg.mvButton):
+                dpg.add_theme_color(dpg.mvThemeCol_Button, [0, 0, 0, 0])
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, [255, 255, 255, 20]) # Leve brilho ao passar o mouse
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, [0, 0, 0, 0])
+                
+        dpg.bind_item_theme(f"rect_btn_{idx}", invisible_btn_theme)
+        
+        with dpg.tooltip(f"rect_btn_{idx}"):
+            dpg.add_text(f"Local Temperature: {temperature:.2f}°C", tag=f"tooltip_text_{idx}")
+            
+    def __update_tooltip(self, idx, temperature):
+        dpg.set_value(f"tooltip_text_{idx}", f"Local Temperature: {temperature:.2f}°C")
