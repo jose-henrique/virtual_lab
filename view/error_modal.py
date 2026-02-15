@@ -11,6 +11,7 @@ class ErrorModal:
     def show_errors(self, errors_array):
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True)
+            self.__render_errors(errors_array)
         else:
             font_loader = FontLoader(font_size=24)
             loadedFont = font_loader.load_font()
@@ -34,6 +35,7 @@ class ErrorModal:
 
     
     def __render_errors(self, errors):
+        self.__clean_modal()
         for idx, error in enumerate(errors):
             text_name = (f"text_{idx}")
             dpg.add_text(error, parent=self.window_name, tag=text_name, wrap= self.width_window - 25)
@@ -44,3 +46,8 @@ class ErrorModal:
     
     def __close_window(self, sender, app_data, user_data):
         dpg.configure_item(self.window_name, show=False)
+        
+    def __clean_modal(self):
+        children = dpg.get_item_children(self.window_name, slot=1)
+        for child in children:
+            dpg.delete_item(child)
