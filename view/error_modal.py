@@ -32,7 +32,6 @@ class ErrorModal:
             no_resize=True,
             pos=[self.pos_x,self.pos_y]) as window:
                 self.__render_errors(errors_array)
-                dpg.add_button(label="OK", width=75, pos=[self.width_window - 80, self.height_window - 40], user_data=window, callback=self.__close_window)
                 dpg.bind_item_theme(self.window_name, red_theme)
                 dpg.bind_item_font(self.window_name, loadedFont)
 
@@ -40,12 +39,16 @@ class ErrorModal:
     def __render_errors(self, errors):
         self.__clean_modal()
         for idx, error in enumerate(errors):
-            text_name = (f"text_{idx}")
-            dpg.add_text(error, parent=self.window_name, tag=text_name, wrap= self.width_window - 25)
-            dpg.split_frame()
-            text_sizes = dpg.get_item_state(text_name)['rect_size']
-            window_width = dpg.get_item_state(self.window_name)['rect_size'][0]
-            dpg.set_item_pos(text_name,[((window_width - text_sizes[0]) /2) - 12, ((text_sizes[1] + 20) * idx) + 50])
+            with dpg.group(parent=self.window_name, horizontal=True):
+                dpg.add_spacer(width=20) 
+                dpg.add_text(error, wrap=self.width_window - 40)
+        
+        with dpg.group(parent=self.window_name, horizontal=True):
+            dpg.add_separator(parent=self.window_name)
+            dpg.add_button(label="OK", width=75, callback=self.__close_window, parent=self.window_name, indent=self.width_window - 120)
+            
+            
+                    
     
     def __close_window(self, sender, app_data, user_data):
         dpg.configure_item(self.window_name, show=False)
