@@ -1,3 +1,5 @@
+from gettext import gettext as _
+
 def default_message(message_builder):
     def decorator(func):
         def wrapper(self, *args, **kwargs):
@@ -22,26 +24,26 @@ class DataValidation:
             self.__includes(data, kwargs.get("array"), attribute_name, message=kwargs.get("message"))
         
     
-    @default_message(lambda data, name: f"{name} must be present")    
+    @default_message(lambda data, name: _(f"{name} must be present"))    
     def __presence_validation(self, data, name, message=None):
         if data is None or (not isinstance(data, (float)) and not data):
             self.errors.append(message)
     
-    @default_message(lambda data, base_number, name: f"{name} must be greather than {base_number}")
+    @default_message(lambda data, base_number, name: _(f"{name} must be greather than {base_number}"))
     def __number_greather_than(self, data, base_number, name, message=None):
         if data is None:
             return
         if data <= base_number:
             self.errors.append(message)
             
-    @default_message(lambda data, base_number, name: f"{name} must be smaller than {base_number}")
+    @default_message(lambda data, base_number, name: _(f"{name} must be smaller than {base_number}"))
     def __number_smaller_than(self, data, base_number, name, message=None):
         if data is None :
             return
         if data >= base_number:
             self.errors.append(message)       
             
-    @default_message(lambda data, array, name: f"{name} must be in {array}")
+    @default_message(lambda data, array, name: _(f"{name} must be in: {", ".join(array)}"))
     def __includes(self, data, array, name, message=None):
         if data is None or array is None:
             return

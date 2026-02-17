@@ -2,6 +2,7 @@ import math
 import pickle
 from model.material_property_getter import PropertiesGetter
 from model.data_validation import DataValidation
+from gettext import gettext as _
 
 class FinSolver(DataValidation):
     def __init__(self, fin_geometry, solver_method):
@@ -120,7 +121,7 @@ class FinSolver(DataValidation):
         return properties.get_material(material)
     
     def __validations(self, data):
-        self.validates("Solver",self.solver_method, validation="presence", message="Solver Method Must Be Selected")
+        self.validates("Solver",self.solver_method, validation="presence", message=_("Solver Method Must Be Selected"))
         self.validates("Geometry",self.fin_geometry, validation="presence")
         self.validates("Length",data.get("fin_length"), validation="presence")
         self._validate_dimensions(data)
@@ -141,7 +142,7 @@ class FinSolver(DataValidation):
             self.validates("Radius",data["dimensions"].get("radius"),base_number=0, validation="greather_than")
 
     def __validations_local_temperature(self, array, env_temperature, base_temperature):
-        self.validates("Elements array", array, validation="presence", message="The data about the problem must be provided")
+        self.validates("Elements array", array, validation="presence", message=_("The data about the problem must be provided"))
         self.validates("Enviroment Temperature", env_temperature, validation="presence")
         self.validates("Base Temperature", base_temperature, validation="presence")
 
