@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.material_property_getter import PropertiesGetter
 from controller.fin_analyses_controller import FinAnalysesController
+from controller.charts_controller import ChartsController
 from view.canva_handler import CanvaHandler
 from view.error_modal import ErrorModal
 
@@ -23,8 +24,17 @@ class SimulationWindow:
             pos=[200,20]):
                 self.__accordion_options_simulation(self.window_name)
                 self.canva.initial_draw()
+            self.__context_menu()    
+            
                 
-    
+                
+    def __show_context_menu(self):
+        # Só mostra o menu se a janela de simulação estiver sendo focada/clicada
+        if dpg.is_item_focused(self.window_name):
+            # Move o menu para a posição atual do mouse
+            mouse_pos = dpg.get_drawing_mouse_pos() 
+            dpg.configure_item("window_context_menu", show=True, pos=dpg.get_mouse_pos(local=False))
+            
     def __accordion_options_simulation(self,parent):
         with dpg.child_window(tag="accordion_simulation",
             width=300,
@@ -50,6 +60,10 @@ class SimulationWindow:
                     dpg.add_input_int(label="Nodes", tag="nodes", min_value=0,min_clamped=True, max_value=10000)
                     dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag="solve_method")
                     dpg.add_button(label=_("Run Simulation"), callback=self.__capture_values)
+    
+    def __new_chart(self):
+        charts_handler = ChartsController()
+        charts_handler.new_chart()
     
     def __capture_values(self):
         controller = FinAnalysesController()
@@ -106,5 +120,11 @@ class SimulationWindow:
     def __update_fin_radius(self):
         self.canva.set_fin_height(dpg.get_value("radius") * 2)
         
-    
+    def __context_menu(self):
+        with dpg.window(show=False, popup=True, tag="window_context_menu", no_title_bar=True):
+                dpg.add_menu_item(label=_("New Chart"), callback=self.__new_chart)
+                dpg.add_menu_item(label=_("Clone Window"), callback=lambda: dpg.hide_item(self.window_name))
+
+        with dpg.handler_registry():
+            dpg.add_mouse_click_handler(button=dpg.mvMouseButton_Right, callback=self.__show_context_menu)
         
