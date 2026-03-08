@@ -60,6 +60,7 @@ class SimulationWindow:
                     dpg.add_input_int(label="Nodes", tag="nodes", min_value=0,min_clamped=True, max_value=10000)
                     dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag="solve_method")
                     dpg.add_button(label=_("Run Simulation"), callback=self.__capture_values)
+                    dpg.add_button(label=_("Save as JPG"), callback=self.__save_image)
     
     def __new_chart(self):
         charts_handler = ChartsController()
@@ -119,7 +120,10 @@ class SimulationWindow:
     
     def __update_fin_radius(self):
         self.canva.set_fin_height(dpg.get_value("radius") * 2)
-        
+    
+    def __save_image(self):
+        self.canva.save_image()
+    
     def __context_menu(self):
         with dpg.window(show=False, popup=True, tag="window_context_menu", no_title_bar=True):
                 dpg.add_menu_item(label=_("New Chart"), callback=self.__new_chart)
