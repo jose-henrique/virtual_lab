@@ -14,4 +14,5 @@ class FontLoader:
         with dpg.font_registry():
             with dpg.font(font_path, self.font_size) as loadedFont:
                 dpg.add_font_range_hint(dpg.mvFontRangeHint_Default)
+                dpg.add_font_range(0xf000, 0xf900)
         return loadedFont       

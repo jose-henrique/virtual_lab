@@ -5,6 +5,7 @@ from controller.fin_analyses_controller import FinAnalysesController
 from controller.charts_controller import ChartsController
 from view.canva_handler import CanvaHandler
 from view.error_modal import ErrorModal
+from view.image_setup_view import ImageSetupView
 
 class SimulationWindow:
     def __init__(self):
@@ -122,7 +123,9 @@ class SimulationWindow:
         self.canva.set_fin_height(dpg.get_value("radius") * 2)
     
     def __save_image(self):
-        self.canva.save_image()
+        image_setup = ImageSetupView(self.canva)
+        image_setup.base_window()
+        #self.canva.save_image()
     
     def __context_menu(self):
         with dpg.window(show=False, popup=True, tag="window_context_menu", no_title_bar=True):
