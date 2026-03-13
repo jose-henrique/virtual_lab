@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
-from model.fonts_loader import FontLoader
+from model.utils.font_manager import FontManager
 
 class ErrorModal:
     def __init__(self):
@@ -16,8 +16,7 @@ class ErrorModal:
             dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
             self.__render_errors(errors_array)
         else:
-            font_loader = FontLoader(font_size=24)
-            loadedFont = font_loader.load_font()
+            loadedFont = FontManager().get("text_roboto_medium")
             with dpg.theme() as red_theme:
                     with dpg.theme_component(dpg.mvAll):
                         dpg.add_theme_color(dpg.mvThemeCol_TitleBg, (200, 50, 50, 255))  

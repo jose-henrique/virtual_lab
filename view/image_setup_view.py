@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
-from model.fonts_loader import FontLoader
+from model.utils.font_manager import FontManager
 
 class ImageSetupView():
     def __init__(self, canva):
@@ -16,8 +16,7 @@ class ImageSetupView():
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True)
         else:
-            font_loader = FontLoader(font_name="awesome-regular.otf", font_size=12)
-            icons_font = font_loader.load_font()
+            icons_font = icons_font = FontManager().get("icons_solid_small")
             with dpg.window(label=_("Image Setup"), 
             tag=self.window_name,
             width=self.width_window,
