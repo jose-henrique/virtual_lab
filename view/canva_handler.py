@@ -23,8 +23,16 @@ class CanvaHandler:
             self.__draw_base(ref)
             self.__draw_fin_profile(ref)
             
-    def save_image(self):
-        image_handler = ImageHandler(self.graphic_handler.command_set,self.width, self.height, (self.width - (self.fin_width + 20))/2, width=1280, height=720)
+    def save_image(self, user_inputs):
+        image_handler = ImageHandler(
+            self.graphic_handler.command_set,
+            self.width, self.height, 
+            (self.width - (self.fin_width + 20))/2, 
+            width=user_inputs["image_size"][0], 
+            height=user_inputs["image_size"][1],
+            location=user_inputs["location"],
+            filename=user_inputs["filename"]
+            )
         image_handler.generate_and_save()
             
     

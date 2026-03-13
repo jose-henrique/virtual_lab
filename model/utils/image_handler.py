@@ -2,19 +2,20 @@ from PIL import Image, ImageDraw
 import time
 
 class ImageHandler:
-    def __init__(self, command_set,original_width, original_height, offset_x, width = 1920, height = 1080):
+    def __init__(self, command_set,original_width, original_height, offset_x, width = 1920, height = 1080, location="", filename=str(time.time())):
         self.command_set = command_set
         self.original_width = original_width
         self.original_height = original_height
         self.width = width
         self.height = height
         self.offset_x = offset_x
-        
+        self.location = location
+        self.filename = filename
 
     def generate_and_save(self):
         img = Image.new("RGB", (self.width, self.height), color="black")
         self.__draw_on_image(img)
-        img.save(f"{time.time()}.png")
+        img.save(f"{self.location}/{self.filename}.png")
     
     def __draw_on_image(self, img):
         draw = ImageDraw.Draw(img)
