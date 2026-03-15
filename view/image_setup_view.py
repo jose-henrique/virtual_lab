@@ -23,7 +23,7 @@ class ImageSetupView():
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True)
         else:
-            icons_font = icons_font = FontManager().get("icons_solid_small")
+            icons_font = FontManager().get("icons_solid_small")
             with dpg.window(label=_("Image Setup"), 
             tag=self.window_name,
             width=self.width_window,
