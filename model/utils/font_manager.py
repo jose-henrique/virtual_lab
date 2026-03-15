@@ -4,7 +4,7 @@ from pathlib import Path
 class FontManager:
     _instance = None
     fonts = {}
-    target_sizes = [{"name": "small", "size": 12}, {"name": "base", "size": 15}, {"name": "medium", "size": 24}, {"name": "large", "size": 28}]
+    target_sizes = [{"name": "small", "size": 10}, {"name": "base", "size": 15}, {"name": "medium", "size": 24}, {"name": "large", "size": 28}]
 
 
     def __new__(cls):
