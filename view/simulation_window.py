@@ -1,17 +1,18 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from controller.charts_controller import ChartsController
-from view.canva_handler import CanvaHandler
+from view.canvas.fin_canvas import FinCanvas
 from view.image_setup_view import ImageSetupView
-from view.fin_accordion_view import FinAccordionView
+from view.analysis_views.fin_accordion_view import FinAccordionView
 from model.utils.font_manager import FontManager
 
 class SimulationWindow:
     def __init__(self):
         self.window_name = "simulation_window"
         self.width_window = 1000
-        self.canva = CanvaHandler(self.window_name,900,400,300, 0)
+        self.height_window = 680
         self.options_width = 235
+        self.canva = FinCanvas(self.window_name,900,self.height_window,self.options_width, 20)
         self.active_analyse = None
         self.available_analysis = []
     
@@ -24,11 +25,11 @@ class SimulationWindow:
             with dpg.window(label=_("Analyse Window"), 
             tag=self.window_name,
             width=self.width_window,
-            height=680,
+            height=self.height_window,
             pos=[200,20]):
                 self.__global_actions()
                 self.__accordion_options_simulation()
-                self.canva.initial_draw()
+                self.canva.setup_canvas()
                 dpg.bind_item_font("actions_group",icons_font)
             self.__context_menu()    
             

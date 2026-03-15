@@ -2,7 +2,7 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.material_property_getter import PropertiesGetter
 from controller.fin_analyses_controller import FinAnalysesController
-from view.experiments_options_master_view import ExperimentsOptionsMasterView
+from view.analysis_views.experiments_options_master_view import ExperimentsOptionsMasterView
 from model.utils.font_manager import FontManager
 
 

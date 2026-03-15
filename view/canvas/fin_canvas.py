@@ -1,62 +1,45 @@
 import dearpygui.dearpygui as dpg
 import matplotlib.cm as cm
 import matplotlib.colors as colors
-from model.utils.graphic_handler import GraphicHandler
-from model.utils.image_handler import ImageHandler
+from view.canvas.canva_handler import CanvaHandler
 
-class CanvaHandler:
+class FinCanvas(CanvaHandler):
     def __init__(self,parent, width, height, offset_x,offset_y):
-        self.width = width
-        self.height = 600#dpg.get_item_height(parent)
-        self.offset_x = offset_x
-        self.offset_y = offset_y
-        self.parent = parent
+        self.name = "fin_canva"
+        super().__init__(parent, width, height, offset_x,offset_y)
         self.fin_width = 400
         self.fin_height = 60
-        self.ref = [self.offset_x, self.offset_y]
-        self.graphic_handler = GraphicHandler()
+        self.base_width = 20
+        self.base_height = 90
+        self.object_width = self.base_width + self.fin_width
+        self.object_height = self.base_height
     
     
-    def initial_draw(self):
-        ref = [self.offset_x, self.offset_y]
-        with dpg.drawlist(width=self.width, height=self.height, parent=self.parent, pos=[0, 0], tag="canva"):
-            self.__draw_base(ref)
-            self.__draw_fin_profile(ref)
-            
-    def save_image(self, user_inputs):
-        image_handler = ImageHandler(
-            self.graphic_handler.command_set,
-            self.width, self.height, 
-            (self.width - (self.fin_width + 20))/2, 
-            width=user_inputs["image_size"][0], 
-            height=user_inputs["image_size"][1],
-            location=user_inputs["location"],
-            filename=user_inputs["filename"]
-            )
-        image_handler.generate_and_save()
-            
+    def _initial_draw(self):
+        self.__draw_base()
+        self.__draw_fin_profile()
     
     def set_base_temp(self, temp):
         dpg.delete_item("base_temperature_label")
-        self.graphic_handler.draw_text([self.offset_x + 40, 350], f"{temp} °C", size=17, color=(255, 255, 255), parent="canva", tag="base_temperature_label")
+        self.graphic_handler.draw_text([(self.width -self.object_width)/2, 390], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag="base_temperature_label")
         
     def set_fin_length(self, legth):
         dpg.delete_item("fin_length_label")
         center_x = (self.second_vertical_bar_pos_x + self.first_vertical_bar_pos_x)/2
         pos_y = self.horzontal_dimension_pos - 20
-        self.graphic_handler.draw_text([center_x - 40, pos_y], f"{legth} mm", size=17, color=(255, 255, 255), parent="canva", tag="fin_length_label")
+        self.graphic_handler.draw_text([center_x - 40, pos_y], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag="fin_length_label")
     
     def set_fin_height(self, legth):
         dpg.delete_item("fin_height_label")
         center_y = (self.second_horizontal_bar_pos_y + self.first_horizontal_bar_pos_y)/2
         pos_x = self.vertical_dimension_pos + 10
-        self.graphic_handler.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent="canva", tag="fin_height_label")
+        self.graphic_handler.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag="fin_height_label")
         
     def color_fin(self, temp_distribuition_array, base_temperature):
         nodes = len(temp_distribuition_array)
         node_height = self.fin_height
-        node_pos_y = self.ref[1] + ((self.height/2)-(node_height/2))
-        node_pos_x = self.ref[0] + 69
+        node_pos_y = ((self.height/2)-(node_height/2))
+        node_pos_x = ((self.width -self.object_width)/2) + self.base_width
         node_width = self.fin_width / nodes
         temperatures = [item['local_temp'] for item in temp_distribuition_array]
         normalized = colors.Normalize(vmin=min(temperatures), vmax=max(temperatures))
@@ -64,37 +47,49 @@ class CanvaHandler:
         
         for i, element in enumerate(temp_distribuition_array):
             rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
-            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="canva")
-            self.__draw_tooltip(element["local_temp"], i, node_pos_x, node_pos_y, node_width, node_height)
+            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent=self.name)
+            #self.__draw_tooltip(element["local_temp"], i, node_pos_x, node_pos_y, node_width, node_height)
+            self.__draw_subtile(i, nodes, element["local_temp"], rgb_color)
             node_pos_x += node_width
             
+    
+    def __draw_subtile(self, idx, nodes, temperature, fill):
+        first_subtile_pos_y = 10
+        max_height = 340
+        node_height = max_height /nodes
+        node_width = 30
+        posx_x_0 = 20
+        posx_x_1 = posx_x_0 + node_width
+        current_top_position = first_subtile_pos_y + (node_height*idx)
+        step = (nodes - 1) / 4
+        targets = {0, round(step), round(step*2), round(step*3), nodes-1}
+        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=(255,255,255, 0), fill=fill, parent=self.name)
+        dpg.delete_item(f"temp_title_{idx}")
+        if idx in targets:
+            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"temp_title_{idx}")
+        
+            
 
-        
-        
-    def __draw_base(self, ref):
-        rect_height = 90
-        rect_width = 20
-        pos_x_rect = ref[0] + 50
-        pos_y_rect = ref[1] + ((self.height/2)-(rect_height/2))
-        self.graphic_handler.draw_rectangle([pos_x_rect, pos_y_rect], [(pos_x_rect + rect_width), (pos_y_rect + rect_height)], color=(255, 255, 255),fill=(230, 0, 0, 255))
+    def __draw_base(self):
+        pos_x_rect = (self.width - self.object_width)/2
+        pos_y_rect = ((self.height/2)-(self.base_height/2))
+        self.graphic_handler.draw_rectangle([pos_x_rect, pos_y_rect], [(pos_x_rect + self.base_width), (pos_y_rect + self.base_height)], color=(255, 255, 255),fill=(230, 0, 0, 255))
     
-    def __draw_fin_profile(self, ref):
-        rect_height = self.fin_height
-        rect_width = self.fin_width
-        pos_x_rect = ref[0] + 69
-        pos_y_rect = ref[1] + ((self.height/2)-(rect_height/2))
-        self.graphic_handler.draw_rectangle([pos_x_rect, pos_y_rect], [(pos_x_rect + rect_width), (pos_y_rect + rect_height)], color=(255, 255, 255))
-        self.__draw_dimensions_lines(ref,pos_x_rect,pos_y_rect,rect_height)
+    def __draw_fin_profile(self):
+        pos_x_rect = ((self.width -self.object_width)/2) + self.base_width
+        pos_y_rect = ((self.height/2)-(self.fin_height/2))
+        self.graphic_handler.draw_rectangle([pos_x_rect, pos_y_rect], [(pos_x_rect + self.fin_width), (pos_y_rect + self.fin_height)], color=(255, 255, 255))
+        self.__draw_dimensions_lines(pos_x_rect,pos_y_rect,self.fin_height)
     
-    def __draw_dimensions_lines(self, ref, fin_x_position, fin_y_position, fin_height):
-        self.first_vertical_bar_pos_x = ref[0] + 69
-        self.second_vertical_bar_pos_x = ref[0] + 68 + self.fin_width
+    def __draw_dimensions_lines(self, fin_x_position, fin_y_position, fin_height):
+        self.first_vertical_bar_pos_x = fin_x_position
+        self.second_vertical_bar_pos_x = fin_x_position + self.fin_width
         vertical_bar_height = 100
         self.horzontal_dimension_pos = fin_y_position - 80
         horizontal_bars_x = self.second_vertical_bar_pos_x + 30
         horizontal_bars_width = 40
-        self.first_horizontal_bar_pos_y = ref[1] + fin_y_position
-        self.second_horizontal_bar_pos_y = ref[1] + fin_y_position + fin_height
+        self.first_horizontal_bar_pos_y = fin_y_position
+        self.second_horizontal_bar_pos_y = fin_y_position + fin_height
         self.vertical_dimension_pos = horizontal_bars_x+horizontal_bars_width-20
         
         self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, (fin_y_position -30)], [self.first_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
