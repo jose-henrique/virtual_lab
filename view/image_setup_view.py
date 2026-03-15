@@ -1,13 +1,15 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
+from model.utils.location_getter import LocationGetter
+
 
 class ImageSetupView():
     def __init__(self, canva):
         self.canva = canva
         self.window_name = "image_setup"
         self.width_window = 300
-        self.height_window = 230
+        self.height_window = 245
         self.pos_x = 0
         self.pos_y = 0
         self.resolution_mapping = {
@@ -24,6 +26,7 @@ class ImageSetupView():
             dpg.configure_item(self.window_name, show=True)
         else:
             icons_font = FontManager().get("icons_solid_small")
+            text_font = FontManager().get("text_roboto_base")
             with dpg.window(label=_("Image Setup"), 
             tag=self.window_name,
             width=self.width_window,
@@ -32,7 +35,7 @@ class ImageSetupView():
             no_collapse=True,
             pos=[self.pos_x,self.pos_y]):
                 self.__render_options()
-                self.__get_folder_location()
+                dpg.bind_item_font(self.window_name,text_font)
                 dpg.bind_item_font("button_folder",icons_font)
     
     def __render_options(self):
@@ -40,12 +43,12 @@ class ImageSetupView():
             dpg.add_text(_("File Location"))
             with dpg.group(horizontal=True):
                 dpg.add_input_text(label="", default_value="", tag="location", readonly=True, width=200,enabled=True)
-                dpg.add_button(label="\uf07b", width=75, tag="button_folder", callback=self.__show_folder_selector)
-        dpg.add_spacer(height=7)
+                dpg.add_button(label="\uf07b", width=75, tag="button_folder", callback=self.__get_folder_location)
+        dpg.add_spacer(height=5)
         with dpg.group(tag="name_group"):
             dpg.add_text(_("Image Name"))
             dpg.add_input_text(label="", default_value="my_image", tag="filename", width=self.width_window-20,enabled=True)
-        dpg.add_spacer(height=7)
+        dpg.add_spacer(height=5)
         with dpg.group(tag="size_group", width=self.width_window-20):
             dpg.add_text(_("Image Resolution"))
             dpg.add_combo(list(self.resolution_mapping.keys()), default_value=_("Select A Resolution"), tag="image_size")
@@ -59,17 +62,11 @@ class ImageSetupView():
             dpg.add_separator(parent=self.window_name)
             dpg.add_button(label=_("SAVE"), width=75, callback=self.__save_image, parent=self.window_name, indent=self.width_window - 100)
             
-    def __get_folder_location(self):
-        dpg.add_file_dialog(
-                directory_selector=True, show=False, callback=self.__setup_folder_location, tag="file_dialog_id",
-                width=700 ,height=400)
-        
-    def __show_folder_selector(self):
-        dpg.show_item("file_dialog_id")
-        
     
-    def __setup_folder_location(self, sender, app_data):
-        dpg.set_value("location", app_data["file_path_name"])
+    def __get_folder_location(self):
+        location = LocationGetter().get_location()
+        dpg.set_value("location", location)
+    
             
     def __save_image(self):
         user_inputs = self.__get_user_inputs()
