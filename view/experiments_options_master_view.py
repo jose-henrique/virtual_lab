@@ -7,6 +7,7 @@ class ExperimentsOptionsMasterView:
     
     def __init__(self):
         self.view_name = ""
+        self.pos = [0,90]
         
     def process_results(self):
         pass

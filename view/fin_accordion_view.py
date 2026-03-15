@@ -3,15 +3,19 @@ from gettext import gettext as _
 from model.material_property_getter import PropertiesGetter
 from controller.fin_analyses_controller import FinAnalysesController
 from view.experiments_options_master_view import ExperimentsOptionsMasterView
+from model.utils.font_manager import FontManager
 
 
 class FinAccordionView(ExperimentsOptionsMasterView):
     def __init__(self, width, parent, canva):
+        super().__init__()
         self.width = width
         self.parent = parent
         self.view_name = "fin_options"
         self.canva = canva
+        loadedFont = FontManager().get("text_roboto_base")
         self.__render_accordion()
+        dpg.bind_item_font(self.view_name, loadedFont)
         
     def process_results(self):
         super
@@ -23,6 +27,9 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             self.__success_callback(data_analyses)
         else:
             self.error_callback(data_analyses['errors'])
+            
+    def __success_callback(self, data):
+        self.canva.color_fin(data["temperatures"], data["base_temperature"])
         
     def __render_accordion(self):
         with dpg.child_window(tag=self.view_name,
@@ -30,27 +37,36 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             autosize_y=True,
             always_use_window_padding=True,
             show=False,
-            pos=[0,100],
+            pos= self.pos,
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
-                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag="geometry_type")
-                    with dpg.group(tag="radius_group"):
+                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag="geometry_type", callback=self.__change_geometry)
+                    with dpg.group(tag="radius_group", show=False):
                         dpg.add_text(_("Radius (mm)"))
                         dpg.add_input_float(label="", tag="radius", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
+                    with dpg.group(tag="square_group_a", show=False):
+                        dpg.add_text(_("A Length (mm)"))
+                        dpg.add_input_float(label="", tag="a_length", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
+                    with dpg.group(tag="square_group_b", show=False):
+                        dpg.add_text(_("B Length (mm)"))
+                        dpg.add_input_float(label="", tag="b_length", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
                     with dpg.group(tag="length_group"):
                         dpg.add_text(_("Length (mm)"))
                         dpg.add_input_float(label= "", tag="length", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, callback=self.__update_fin_legth)
                 with dpg.collapsing_header(label=_("Physical Properties"), default_open=True):
                     properties = PropertiesGetter()
                     dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag="material")
-                with dpg.collapsing_header(label=_("Enviroment"), default_open=True):
-                    dpg.add_combo([_("Calculate Convection Coefficient "), _("Give Convection Coefficient ")], default_value=_("Select Method"))
-                    with dpg.group(tag="convection_group"):
-                        dpg.add_text("H (KW/m².K)")
-                        dpg.add_input_float(label="", tag="convection_coefficient", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
                     with dpg.group(tag="base_temp_group"):
                         dpg.add_text(_("Base Temp. (°C)"))  
                         dpg.add_input_float(label="", tag="base_temperature", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150, callback=self.__update_base_temp)
+                    with dpg.group(tag="specified_temp"):
+                        dpg.add_text(_("Temp at the of the fin (°C)"))  
+                        dpg.add_input_float(label="", tag="end_temp_fin", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
+                with dpg.collapsing_header(label=_("Enviroment"), default_open=True):
+                    #dpg.add_combo([_("Calculate Convection Coefficient "), _("Give Convection Coefficient ")], default_value=_("Select Method"))
+                    with dpg.group(tag="convection_group"):
+                        dpg.add_text("H (KW/m².K)")
+                        dpg.add_input_float(label="", tag="convection_coefficient", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
                     with dpg.group(tag="env_temp_group"):
                         dpg.add_text(_("Env. Temp. (°C)"))    
                         dpg.add_input_float(label="", tag="env_temperature", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
@@ -64,11 +80,12 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         data = {
                 "fin_geometry": self.__convert_geometry_type(dpg.get_value("geometry_type")),
                 "solver_method": self.__convert_method(dpg.get_value("solve_method")),
-                "base_temperature": dpg.get_value("base_temperature"),
-                "env_temperature": dpg.get_value("env_temperature"),
                 "data": {    
+                    "base_temperature": dpg.get_value("base_temperature"),
+                    "env_temperature": dpg.get_value("env_temperature"),
+                    "temp_end_fin": dpg.get_value("end_temp_fin"),
                     "convection_coefficient": dpg.get_value("convection_coefficient"),
-                    "dimensions": {"radius": dpg.get_value("radius")},
+                    "dimensions": {"radius": dpg.get_value("radius"), "a": dpg.get_value("a_length"),"b": dpg.get_value("b_length")},
                     "fin_length": dpg.get_value("length"),
                     "node_count": dpg.get_value("nodes"),
                     "fin_material": dpg.get_value("material")
@@ -76,8 +93,7 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             }
         return data
         
-    def __success_callback(self, data):
-        self.canva.color_fin(data["temperatures"], data["base_temperature"])
+    
     
     def __convert_method(self, method):
         if method == "Infinity Fin":
@@ -88,6 +104,16 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             return 3
         elif method == "Specified Convetion":
             return 4
+        
+    def __change_geometry(self, sender, geometry_type):
+        if geometry_type == "Rectangle":
+            dpg.show_item("square_group_a")
+            dpg.show_item("square_group_b")
+            dpg.hide_item("radius_group")
+        elif geometry_type == "Circle":
+            dpg.show_item("radius_group")
+            dpg.hide_item("square_group_a")
+            dpg.hide_item("square_group_b")
         
     def __convert_geometry_type(self, geometry_type):
         if geometry_type == "Rectangle":

@@ -8,7 +8,7 @@ class FinAnalysesController:
     def solve_analyses(self, params):
         solver = FinSolver(params["fin_geometry"], params["solver_method"])
         data = self.__clean_data(params["data"])
-        temp_array = solver.find_local_temperature(solver.find_temp_distribuition(data), params["env_temperature"], params["base_temperature"])
+        temp_array = solver.find_local_temperature(solver.find_temp_distribuition(data), data.get("env_temperature"), data.get("base_temperature"))
         
         
         temp_distribuition = solver.find_temp_distribuition(data)
@@ -21,6 +21,8 @@ class FinAnalysesController:
     def __clean_data(self, data):
         new_data = data
         new_data["dimensions"]["radius"] = data["dimensions"]["radius"]/1000
+        new_data["dimensions"]["a"] = data["dimensions"]["a"]/1000
+        new_data["dimensions"]["b"] = data["dimensions"]["b"]/1000
         new_data["fin_length"] = data["fin_length"]/1000
         return new_data
     

@@ -76,8 +76,8 @@ class FinSolver(DataValidation):
         thermal_conductivity = properties["thermal_conductivity"]
         area = self.__area_solve(data["dimensions"])
         m = (convection_coefficient * perimeter)/(thermal_conductivity * area)
-        teta_l = data["temp_end_fin"] - data["temp_env"]
-        teta_b = data["temp_base"] - data["temp_env"]
+        teta_l = data.get("temp_end_fin") - data.get("env_temperature")
+        teta_b = data.get("base_temperature") - data.get("env_temperature")
         return (((teta_l/teta_b)*math.sinh(m*analyses_point))+(math.sinh(m*(data["fin_length"]-analyses_point))))/(math.sinh(m*data["fin_length"]))
 
     def __temp_distribuiton_convection(self, data, analyses_point, properties):
@@ -129,6 +129,9 @@ class FinSolver(DataValidation):
         self.validates("Convection Coefficient",data.get("convection_coefficient"), validation="greather_than",base_number=0)
         self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=9)
         self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials())
+        self.validates("Enviroment Temperature", data.get("env_temperature"), validation="presence")
+        if self.solver_method == 3:
+            self.validates("Specified Temperature",data.get("temp_end_fin"), validation="presence")
         
     def _validate_dimensions(self, data):
         if self.fin_geometry == 1:
@@ -143,7 +146,6 @@ class FinSolver(DataValidation):
 
     def __validations_local_temperature(self, array, env_temperature, base_temperature):
         self.validates("Elements array", array, validation="presence", message=_("The data about the problem must be provided"))
-        self.validates("Enviroment Temperature", env_temperature, validation="presence")
         self.validates("Base Temperature", base_temperature, validation="presence")
 
 """
