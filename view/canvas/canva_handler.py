@@ -32,4 +32,5 @@ class CanvaHandler:
             location=user_inputs["location"],
             filename=user_inputs["filename"]
             )
-        image_handler.generate_and_save()
+        return image_handler.generate_and_save()
+        

@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 import time
+from gettext import gettext as _
 
 class ImageHandler:
     def __init__(self, command_set,original_width, original_height, offset_x, width = 1920, height = 1080, location="", filename=str(time.time())):
@@ -13,9 +14,13 @@ class ImageHandler:
         self.filename = filename
 
     def generate_and_save(self):
-        img = Image.new("RGB", (self.width, self.height), color="black")
-        self.__draw_on_image(img)
-        img.save(f"{self.location}/{self.filename}.png")
+        try:
+            img = Image.new("RGB", (self.width, self.height), color="black")
+            self.__draw_on_image(img)
+            img.save(f"{self.location}/{self.filename}.png")
+            return {"status": 0}
+        except PermissionError as e:
+            return {"status": -1, "errors": [_("You don't have permission to write on this folder")]}
     
     def __draw_on_image(self, img):
         draw = ImageDraw.Draw(img)

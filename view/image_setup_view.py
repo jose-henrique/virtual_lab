@@ -2,6 +2,8 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
+from view.error_modal import ErrorModal
+from view.success_modal import SuccessModal
 
 
 class ImageSetupView():
@@ -70,7 +72,19 @@ class ImageSetupView():
             
     def __save_image(self):
         user_inputs = self.__get_user_inputs()
-        self.canva.save_image(user_inputs)
+        results = self.canva.save_image(user_inputs)
+        if results["status"] == 0:
+            self.__success_image_save()
+        elif results["status"] == -1:
+            self.__error_image_save(results["errors"])
+        
+    def __success_image_save(self):
+        dpg.configure_item(self.window_name, show=False)
+        SuccessModal().show_message(_("Image Saved"))
+    
+    def __error_image_save(self, errors):
+        error_modal = ErrorModal()
+        error_modal.show_errors(errors)    
 
     def __get_user_inputs(self):
         location = dpg.get_value("location")
