@@ -21,10 +21,10 @@ class SimulationWindow:
             dpg.configure_item(self.window_name, show=True)
         else:
             icons_font = FontManager().get("icons_solid_small")
-            with dpg.window(label=_("Simulation Window"), 
+            with dpg.window(label=_("Analyse Window"), 
             tag=self.window_name,
             width=self.width_window,
-            height=600,
+            height=680,
             pos=[200,20]):
                 self.__global_actions()
                 self.__accordion_options_simulation()
@@ -41,9 +41,13 @@ class SimulationWindow:
             
     def __global_actions(self):
         dpg.add_combo([_("Fins"), _("Forced Convection"), _("Natural Convection"), _("Conduction")], default_value=_("Select Analyse"), width=(self.options_width - 10), callback=self.__change_active_analyse)
-        with dpg.group(tag="actions_group", horizontal=True):
-            dpg.add_button(label=_("\uf04b Run Simulation"), callback=self.__process_result)
-            dpg.add_button(label=_("\uf03e Save as JPG"), callback=self.__save_image)
+        with dpg.group(tag="actions_group"):
+            with dpg.group(horizontal=True):
+                dpg.add_button(label=_("\uf04b Run Simulation"), callback=self.__process_result)
+                dpg.add_button(label=_("\uf03e Save as JPG"), callback=self.__save_image)
+            with dpg.group(horizontal=True):
+                dpg.add_button(label=_("\uf0c5 Clone Analyse"))
+                dpg.add_button(label=_("\uf201 New Chart"))    
             
     def __accordion_options_simulation(self):
         fin_options = FinAccordionView(self.options_width, self.window_name, self.canva)
