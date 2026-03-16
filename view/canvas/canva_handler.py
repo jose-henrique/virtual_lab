@@ -30,7 +30,8 @@ class CanvaHandler:
             width=user_inputs["image_size"][0], 
             height=user_inputs["image_size"][1],
             location=user_inputs["location"],
-            filename=user_inputs["filename"]
+            filename=user_inputs["filename"],
+            background_color=user_inputs["background_color"]
             )
         return image_handler.generate_and_save()
         

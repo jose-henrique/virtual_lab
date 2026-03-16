@@ -21,7 +21,12 @@ class ImageSetupView():
             "QUAD HD (2560x1440)": (2560, 1440),
             "4k (3480x2160)": (3480, 2160)
         }
-        
+
+        self.background_color_mapping = {
+            "White": (255, 255, 255),
+            "Black": (0, 0, 0),
+            "Transparent": (0, 0, 0, 0)
+        }
     def base_window(self):
         self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
@@ -51,6 +56,10 @@ class ImageSetupView():
         with dpg.group(tag="name_group"):
             dpg.add_text(_("Image Name"))
             dpg.add_input_text(label="", default_value="my_image", tag="filename", width=self.width_window-20,enabled=True)
+            dpg.add_spacer(height=5)
+        with dpg.group(tag="background_group", width=self.width_window-20):
+            dpg.add_text(_("Image Background Color"))
+            dpg.add_combo(list(self.background_color_mapping.keys()), default_value=_("Select A Background"), tag="background_color")
         dpg.add_spacer(height=5)
         with dpg.group(tag="size_group", width=self.width_window-20):
             dpg.add_text(_("Image Resolution"))
@@ -92,7 +101,8 @@ class ImageSetupView():
         filename = dpg.get_value("filename")
         image_size_key = dpg.get_value("image_size")
         image_size = self.resolution_mapping.get(image_size_key, (640, 480))
-        return {"location": location, "filename": filename, "image_size": image_size}
+        background_color = self.background_color_mapping.get(dpg.get_value("background_color"), (0, 0, 0))    
+        return {"location": location, "filename": filename, "image_size": image_size, "background_color": background_color}
           
     def __calculate_center_position(self):
         viewport_width = dpg.get_viewport_client_width()

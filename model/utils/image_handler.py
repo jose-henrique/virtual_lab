@@ -4,12 +4,13 @@ from gettext import gettext as _
 from pathlib import Path
 import os
 class ImageHandler:
-    def __init__(self, command_set,original_width, original_height, offset_x, width = 1920, height = 1080, location="", filename=str(time.time())):
+    def __init__(self, command_set,original_width, original_height, offset_x, width = 1920, height = 1080, location="", filename=str(time.time()),background_color=(0,0,0)):
         self.command_set = command_set
         self.original_width = original_width
         self.original_height = original_height
         self.width = width
         self.height = height
+        self.background_color = background_color
         self.offset_x = offset_x
         self.location = location
         self.filename = filename
@@ -17,7 +18,7 @@ class ImageHandler:
 
     def generate_and_save(self):
         try:
-            img = Image.new("RGBA", (self.width, self.height), color=(0,0,0,255))
+            img = Image.new("RGBA", (self.width, self.height), color=self.background_color)
             self.__draw_on_image(img)
             if self.location:
                 img.save(f"{self.location}/{self.filename}.png")
