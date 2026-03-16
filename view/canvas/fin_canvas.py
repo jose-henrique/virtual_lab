@@ -18,6 +18,8 @@ class FinCanvas(CanvaHandler):
     def _initial_draw(self):
         self.__draw_base()
         self.__draw_fin_profile()
+        with dpg.draw_layer(tag="results_group", parent=self.name):
+            pass
     
     def set_base_temp(self, temp):
         dpg.delete_item("base_temperature_label")
@@ -36,6 +38,7 @@ class FinCanvas(CanvaHandler):
         self.graphic_handler.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag="fin_height_label")
         
     def color_fin(self, temp_distribuition_array, base_temperature):
+        self.graphic_handler.start_frame()
         nodes = len(temp_distribuition_array)
         node_height = self.fin_height
         node_pos_y = ((self.height/2)-(node_height/2))
@@ -45,15 +48,16 @@ class FinCanvas(CanvaHandler):
         normalized = colors.Normalize(vmin=min(temperatures), vmax=max(temperatures))
         cmap = cm.get_cmap('coolwarm')
         
+        dpg.delete_item("results_group", children_only=True)
         for i, element in enumerate(temp_distribuition_array):
             rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
-            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent=self.name)
-            #self.__draw_tooltip(element["local_temp"], i, node_pos_x, node_pos_y, node_width, node_height)
-            self.__draw_subtile(i, nodes, element["local_temp"], rgb_color)
+            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="results_group", tag=f"rect_{i}", current_only=True)
+            self.__draw_subtitle(i, nodes, element["local_temp"], rgb_color)
             node_pos_x += node_width
+        self.graphic_handler.end_frame()
             
     
-    def __draw_subtile(self, idx, nodes, temperature, fill):
+    def __draw_subtitle(self, idx, nodes, temperature, fill):
         first_subtile_pos_y = 10
         max_height = 340
         node_height = max_height /nodes
@@ -63,10 +67,9 @@ class FinCanvas(CanvaHandler):
         current_top_position = first_subtile_pos_y + (node_height*idx)
         step = (nodes - 1) / 4
         targets = {0, round(step), round(step*2), round(step*3), nodes-1}
-        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=(255,255,255, 0), fill=fill, parent=self.name)
-        dpg.delete_item(f"temp_title_{idx}")
+        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=fill, fill=fill, parent="results_group", tag=f"square_title_{idx}", current_only=True)
         if idx in targets:
-            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"temp_title_{idx}")
+            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent="results_group", tag=f"temp_title_{idx}", current_only=True)
         
             
 
