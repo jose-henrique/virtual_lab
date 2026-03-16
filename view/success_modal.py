@@ -31,7 +31,7 @@ class SuccessModal:
     
     def __render_message(self, message):
         self.__clean_modal()
-        dpg.add_text(message, wrap=self.width_window - 40)
+        dpg.add_text(message, wrap=self.width_window - 40, parent=self.window_name)
         
         with dpg.group(parent=self.window_name, horizontal=True):
             dpg.add_separator(parent=self.window_name)
