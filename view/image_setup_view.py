@@ -26,6 +26,7 @@ class ImageSetupView():
         self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True)
+            dpg.focus_item(self.window_name)
         else:
             icons_font = FontManager().get("icons_solid_small")
             text_font = FontManager().get("text_roboto_base")
