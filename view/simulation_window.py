@@ -5,10 +5,12 @@ from view.canvas.fin_canvas import FinCanvas
 from view.image_setup_view import ImageSetupView
 from view.analysis_views.fin_accordion_view import FinAccordionView
 from model.utils.font_manager import FontManager
+import time
 
 class SimulationWindow:
     def __init__(self):
-        self.window_name = "simulation_window"
+        self.unique_id = str(int(time.time()))
+        self.window_name = f"simulation_window_{self.unique_id}"
         self.width_window = 1000
         self.height_window = 680
         self.options_width = 235
@@ -30,7 +32,7 @@ class SimulationWindow:
                 self.__global_actions()
                 self.__accordion_options_simulation()
                 self.canva.setup_canvas()
-                dpg.bind_item_font("actions_group",icons_font)
+                dpg.bind_item_font(f"actions_group_{self.unique_id}",icons_font)
             self.__context_menu()    
             
                 
@@ -42,12 +44,12 @@ class SimulationWindow:
             
     def __global_actions(self):
         dpg.add_combo([_("Fins"), _("Forced Convection"), _("Natural Convection"), _("Conduction")], default_value=_("Select Analyse"), width=(self.options_width - 10), callback=self.__change_active_analyse)
-        with dpg.group(tag="actions_group"):
+        with dpg.group(tag=f"actions_group_{self.unique_id}"):
             with dpg.group(horizontal=True):
                 dpg.add_button(label=_("\uf04b Run Simulation"), callback=self.__process_result)
                 dpg.add_button(label=_("\uf03e Save as JPG"), callback=self.__save_image)
             with dpg.group(horizontal=True):
-                dpg.add_button(label=_("\uf0c5 Clone Analyse"))
+                dpg.add_button(label=_("\uf0c5 Clone Analyse"), callback=self.__clone_window)
                 dpg.add_button(label=_("\uf201 New Chart"))    
             
     def __accordion_options_simulation(self):
@@ -57,6 +59,10 @@ class SimulationWindow:
     def __process_result(self):
         if self.active_analyse:
             self.active_analyse.process_results()
+
+    def __clone_window(self):
+        new_clone = SimulationWindow()
+        new_clone.base_window()
         
     def __change_active_analyse(self, sender, app_data):
         for analyse in self.available_analysis:
@@ -78,7 +84,7 @@ class SimulationWindow:
         image_setup.base_window()
     
     def __context_menu(self):
-        with dpg.window(show=False, popup=True, tag="window_context_menu", no_title_bar=True):
+        with dpg.window(show=False, popup=True, tag=f"window_context_menu_{self.unique_id}", no_title_bar=True):
                 dpg.add_menu_item(label=_("New Chart"), callback=self.__new_chart)
                 dpg.add_menu_item(label=_("Clone Window"), callback=lambda: dpg.hide_item(self.window_name))
 

@@ -2,10 +2,12 @@ import dearpygui.dearpygui as dpg
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 from view.canvas.canva_handler import CanvaHandler
+import time
 
 class FinCanvas(CanvaHandler):
     def __init__(self,parent, width, height, offset_x,offset_y):
-        self.name = "fin_canva"
+        self.unique_id = str(int(time.time()))
+        self.name = f"fin_canva_{self.unique_id}"
         super().__init__(parent, width, height, offset_x,offset_y)
         self.fin_width = 400
         self.fin_height = 60
@@ -18,24 +20,24 @@ class FinCanvas(CanvaHandler):
     def _initial_draw(self):
         self.__draw_base()
         self.__draw_fin_profile()
-        with dpg.draw_layer(tag="results_group", parent=self.name):
+        with dpg.draw_layer(tag=f"results_group_{self.unique_id}", parent=self.name):
             pass
     
     def set_base_temp(self, temp):
-        dpg.delete_item("base_temperature_label")
-        self.graphic_handler.draw_text([(self.width -self.object_width)/2, 390], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag="base_temperature_label")
+        dpg.delete_item(f"base_temperature_label_{self.unique_id}")
+        self.graphic_handler.draw_text([(self.width -self.object_width)/2, 390], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"base_temperature_label_{self.unique_id}")
         
     def set_fin_length(self, legth):
-        dpg.delete_item("fin_length_label")
+        dpg.delete_item(f"fin_length_label_{self.unique_id}")
         center_x = (self.second_vertical_bar_pos_x + self.first_vertical_bar_pos_x)/2
         pos_y = self.horzontal_dimension_pos - 20
-        self.graphic_handler.draw_text([center_x - 40, pos_y], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag="fin_length_label")
+        self.graphic_handler.draw_text([center_x - 40, pos_y], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag=f"fin_length_label_{self.unique_id}")
     
     def set_fin_height(self, legth):
-        dpg.delete_item("fin_height_label")
+        dpg.delete_item(f"fin_height_label_{self.unique_id}")
         center_y = (self.second_horizontal_bar_pos_y + self.first_horizontal_bar_pos_y)/2
         pos_x = self.vertical_dimension_pos + 10
-        self.graphic_handler.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag="fin_height_label")
+        self.graphic_handler.draw_text([pos_x, center_y - 10], f"{legth} mm", size=17, color=(255, 255, 255), parent=self.name, tag=f"fin_height_label_{self.unique_id}")
         
     def color_fin(self, temp_distribuition_array, base_temperature):
         self.graphic_handler.start_frame()
@@ -48,10 +50,10 @@ class FinCanvas(CanvaHandler):
         normalized = colors.Normalize(vmin=min(temperatures), vmax=max(temperatures))
         cmap = cm.get_cmap('coolwarm')
         
-        dpg.delete_item("results_group", children_only=True)
+        dpg.delete_item(f"results_group_{self.unique_id}", children_only=True)
         for i, element in enumerate(temp_distribuition_array):
             rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
-            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent="results_group", tag=f"rect_{i}", current_only=True)
+            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent=f"results_group_{self.unique_id}", tag=f"rect_{i}", current_only=True)
             self.__draw_subtitle(i, nodes, element["local_temp"], rgb_color)
             node_pos_x += node_width
         self.graphic_handler.end_frame()
@@ -67,9 +69,9 @@ class FinCanvas(CanvaHandler):
         current_top_position = first_subtile_pos_y + (node_height*idx)
         step = (nodes - 1) / 4
         targets = {0, round(step), round(step*2), round(step*3), nodes-1}
-        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=fill, fill=fill, parent="results_group", tag=f"square_title_{idx}", current_only=True)
+        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=fill, fill=fill, parent=f"results_group_{self.unique_id}", tag=f"square_title_{idx}", current_only=True)
         if idx in targets:
-            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent="results_group", tag=f"temp_title_{idx}", current_only=True)
+            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent=f"results_group_{self.unique_id}", tag=f"temp_title_{idx}", current_only=True)
         
             
 

@@ -11,7 +11,7 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         super().__init__()
         self.width = width
         self.parent = parent
-        self.view_name = "fin_options"
+        self.view_name = f"fin_options_{self.unique_id}"
         self.canva = canva
         loadedFont = FontManager().get("text_roboto_base")
         self.__render_accordion()
@@ -40,55 +40,55 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             pos= self.pos,
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
-                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag="geometry_type", callback=self.__change_geometry)
-                    with dpg.group(tag="radius_group", show=False):
+                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=f"geometry_type_{self.unique_id}", callback=self.__change_geometry)
+                    with dpg.group(tag=f"radius_group_{self.unique_id}", show=False):
                         dpg.add_text(_("Radius (mm)"))
-                        dpg.add_input_float(label="", tag="radius", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
-                    with dpg.group(tag="square_group_a", show=False):
+                        dpg.add_input_float(label="", tag=f"radius_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
+                    with dpg.group(tag=f"square_group_a_{self.unique_id}", show=False):
                         dpg.add_text(_("A Length (mm)"))
-                        dpg.add_input_float(label="", tag="a_length", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
-                    with dpg.group(tag="square_group_b", show=False):
+                        dpg.add_input_float(label="", tag=f"a_length_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
+                    with dpg.group(tag=f"square_group_b_{self.unique_id}", show=False):
                         dpg.add_text(_("B Length (mm)"))
-                        dpg.add_input_float(label="", tag="b_length", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
-                    with dpg.group(tag="length_group"):
+                        dpg.add_input_float(label="", tag=f"b_length_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
+                    with dpg.group(tag=f"length_group_{self.unique_id}"):
                         dpg.add_text(_("Length (mm)"))
-                        dpg.add_input_float(label= "", tag="length", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, callback=self.__update_fin_legth)
+                        dpg.add_input_float(label= "", tag=f"length_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, callback=self.__update_fin_legth)
                 with dpg.collapsing_header(label=_("Physical Properties"), default_open=True):
                     properties = PropertiesGetter()
-                    dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag="material")
-                    with dpg.group(tag="base_temp_group"):
+                    dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag=f"material_{self.unique_id}")
+                    with dpg.group(tag=f"base_temp_group_{self.unique_id}"):
                         dpg.add_text(_("Base Temp. (°C)"))  
-                        dpg.add_input_float(label="", tag="base_temperature", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150, callback=self.__update_base_temp)
-                    with dpg.group(tag="specified_temp"):
+                        dpg.add_input_float(label="", tag=f"base_temperature_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150, callback=self.__update_base_temp)
+                    with dpg.group(tag=f"specified_temp_{self.unique_id}"):
                         dpg.add_text(_("Temp at the of the fin (°C)"))  
-                        dpg.add_input_float(label="", tag="end_temp_fin", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
+                        dpg.add_input_float(label="", tag=f"end_temp_fin_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
                 with dpg.collapsing_header(label=_("Enviroment"), default_open=True):
                     #dpg.add_combo([_("Calculate Convection Coefficient "), _("Give Convection Coefficient ")], default_value=_("Select Method"))
-                    with dpg.group(tag="convection_group"):
+                    with dpg.group(tag=f"convection_group_{self.unique_id}"):
                         dpg.add_text("H (KW/m².K)")
-                        dpg.add_input_float(label="", tag="convection_coefficient", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
-                    with dpg.group(tag="env_temp_group"):
+                        dpg.add_input_float(label="", tag=f"convection_coefficient_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
+                    with dpg.group(tag=f"env_temp_group_{self.unique_id}"):
                         dpg.add_text(_("Env. Temp. (°C)"))    
-                        dpg.add_input_float(label="", tag="env_temperature", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
+                        dpg.add_input_float(label="", tag=f"env_temperature_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, width=150)
                 with dpg.collapsing_header(label=_("Run Simulation"), default_open=True):
-                    with dpg.group(tag="nodes_group"):
+                    with dpg.group(tag=f"nodes_group_{self.unique_id}"):
                         dpg.add_text(_("Nodes"))  
-                        dpg.add_input_int(label="", tag="nodes", min_value=0,min_clamped=True, max_value=10000)
-                    dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag="solve_method")
+                        dpg.add_input_int(label="", tag=f"nodes_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000)
+                    dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag=f"solve_method_{self.unique_id}")
 
     def __capture_values(self):
         data = {
-                "fin_geometry": self.__convert_geometry_type(dpg.get_value("geometry_type")),
-                "solver_method": self.__convert_method(dpg.get_value("solve_method")),
+                "fin_geometry": self.__convert_geometry_type(dpg.get_value(f"geometry_type_{self.unique_id}")),
+                "solver_method": self.__convert_method(dpg.get_value(f"solve_method_{self.unique_id}")),
                 "data": {    
-                    "base_temperature": dpg.get_value("base_temperature"),
-                    "env_temperature": dpg.get_value("env_temperature"),
-                    "temp_end_fin": dpg.get_value("end_temp_fin"),
-                    "convection_coefficient": dpg.get_value("convection_coefficient"),
-                    "dimensions": {"radius": dpg.get_value("radius"), "a": dpg.get_value("a_length"),"b": dpg.get_value("b_length")},
-                    "fin_length": dpg.get_value("length"),
-                    "node_count": dpg.get_value("nodes"),
-                    "fin_material": dpg.get_value("material")
+                    "base_temperature": dpg.get_value(f"base_temperature_{self.unique_id}"),
+                    "env_temperature": dpg.get_value(f"env_temperature_{self.unique_id}"),
+                    "temp_end_fin": dpg.get_value(f"end_temp_fin_{self.unique_id}"),
+                    "convection_coefficient": dpg.get_value(f"convection_coefficient_{self.unique_id}"),
+                    "dimensions": {"radius": dpg.get_value(f"radius_{self.unique_id}"), "a": dpg.get_value(f"a_length_{self.unique_id}"),"b": dpg.get_value(f"b_length_{self.unique_id}")},
+                    "fin_length": dpg.get_value(f"length_{self.unique_id}"),
+                    "node_count": dpg.get_value(f"nodes_{self.unique_id}"),
+                    "fin_material": dpg.get_value(f"material_{self.unique_id}")
                 }
             }
         return data
@@ -107,14 +107,14 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         
     def __change_geometry(self, sender, geometry_type):
         if geometry_type == "Rectangle":
-            dpg.show_item("square_group_a")
-            dpg.show_item("square_group_b")
-            dpg.hide_item("radius_group")
+            dpg.show_item(f"square_group_a_{self.unique_id}")
+            dpg.show_item(f"square_group_b_{self.unique_id}")
+            dpg.hide_item(f"radius_group_{self.unique_id}")
         elif geometry_type == "Circle":
-            dpg.show_item("radius_group")
-            dpg.hide_item("square_group_a")
-            dpg.hide_item("square_group_b")
-        
+            dpg.show_item(f"radius_group_{self.unique_id}")
+            dpg.hide_item(f"square_group_a_{self.unique_id}")
+            dpg.hide_item(f"square_group_b_{self.unique_id}")
+
     def __convert_geometry_type(self, geometry_type):
         if geometry_type == "Rectangle":
             return 1
@@ -122,10 +122,10 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             return 2
     
     def __update_base_temp(self):
-        self.canva.set_base_temp(dpg.get_value("base_temperature"))
+        self.canva.set_base_temp(dpg.get_value(f"base_temperature_{self.unique_id}"))
         
     def __update_fin_legth(self):
-        self.canva.set_fin_length(dpg.get_value("length"))
+        self.canva.set_fin_length(dpg.get_value(f"length_{self.unique_id}"))
     
     def __update_fin_radius(self):
-        self.canva.set_fin_height(dpg.get_value("radius") * 2)
+        self.canva.set_fin_height(dpg.get_value(f"radius_{self.unique_id}") * 2)
