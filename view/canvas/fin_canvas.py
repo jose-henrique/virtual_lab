@@ -53,7 +53,7 @@ class FinCanvas(CanvaHandler):
         dpg.delete_item(f"results_group_{self.unique_id}", children_only=True)
         for i, element in enumerate(temp_distribuition_array):
             rgb_color = tuple(int(255 * c) for c in cmap(normalized(element["local_temp"]))[:3])
-            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent=f"results_group_{self.unique_id}", tag=f"rect_{i}", current_only=True)
+            self.graphic_handler.draw_rectangle([node_pos_x, node_pos_y], [(node_pos_x + node_width), (node_pos_y + node_height)], color=(255,255,255), fill=rgb_color, parent=f"results_group_{self.unique_id}", tag=f"rect_{i}_{self.unique_id}", current_only=True)
             self.__draw_subtitle(i, nodes, element["local_temp"], rgb_color)
             node_pos_x += node_width
         self.graphic_handler.end_frame()
@@ -69,9 +69,9 @@ class FinCanvas(CanvaHandler):
         current_top_position = first_subtile_pos_y + (node_height*idx)
         step = (nodes - 1) / 4
         targets = {0, round(step), round(step*2), round(step*3), nodes-1}
-        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=fill, fill=fill, parent=f"results_group_{self.unique_id}", tag=f"square_title_{idx}", current_only=True)
+        self.graphic_handler.draw_rectangle([posx_x_0, current_top_position], [posx_x_1, current_top_position+node_height], color=fill, fill=fill, parent=f"results_group_{self.unique_id}", tag=f"square_title_{idx}_{self.unique_id}", current_only=True)
         if idx in targets:
-            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent=f"results_group_{self.unique_id}", tag=f"temp_title_{idx}", current_only=True)
+            self.graphic_handler.draw_text([(posx_x_1 + 5), current_top_position], f"{temperature:.2f} °C", size=17, color=(255, 255, 255), parent=f"results_group_{self.unique_id}", tag=f"temp_title_{idx}_{self.unique_id}", current_only=True)
         
             
 
