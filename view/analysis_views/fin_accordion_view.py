@@ -4,11 +4,13 @@ from model.material_property_getter import PropertiesGetter
 from controller.fin_analyses_controller import FinAnalysesController
 from view.analysis_views.experiments_options_master_view import ExperimentsOptionsMasterView
 from model.utils.font_manager import FontManager
+from view.components.input_components import InputComponents
 
 
 class FinAccordionView(ExperimentsOptionsMasterView):
     def __init__(self, width, parent, canva):
         super().__init__()
+        self.input_components = InputComponents()
         self.width = width
         self.parent = parent
         self.view_name = f"fin_options_{self.unique_id}"
@@ -41,9 +43,10 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
                     dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=f"geometry_type_{self.unique_id}", callback=self.__change_geometry)
-                    with dpg.group(tag=f"radius_group_{self.unique_id}", show=False):
-                        dpg.add_text(_("Radius (mm)"))
-                        dpg.add_input_float(label="", tag=f"radius_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
+                    self.input_components.input_float(f"radius_{self.unique_id}", "mm", 0.5, "Radius", 0, 1000, self.__update_fin_radius, 1)
+                    # with dpg.group(tag=f"radius_group_{self.unique_id}", show=False):
+                    #     dpg.add_text(_("Radius (mm)"))
+                    #     dpg.add_input_float(label="", tag=f"radius_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
                     with dpg.group(tag=f"square_group_a_{self.unique_id}", show=False):
                         dpg.add_text(_("A Length (mm)"))
                         dpg.add_input_float(label="", tag=f"a_length_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)

@@ -42,7 +42,8 @@ class FontManager:
     def __add_text_font(self, font_file):
         file_name = font_file.stem
         prefix = file_name.split("-")[0].lower()
-        self.__generate_size_variation(f"text_{prefix}", font_file)
+        font_class = file_name.split("-")[1].lower()
+        self.__generate_size_variation(f"text_{prefix}_{font_class}", font_file)
     
     
     def __generate_size_variation(self, prefix, font_file, icon=False):
