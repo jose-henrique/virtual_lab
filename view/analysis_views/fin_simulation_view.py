@@ -10,12 +10,19 @@ class FinSimluationView:
         self.parent = parent
         self.width = width
         self.height = height
+        self.row_name = "main_row_fin"
         self.__render_simulation()
     
 
     def __render_simulation(self):
-        with dpg.group(horizontal=True, width=self.width, height=self.height, parent=self.parent):
-            canvas = FinCanvas("", 200, -1, 0, 0)
-            canvas.setup_canvas()
-            FinAccordionView(10, "", canvas).show_options()
+        w, h = dpg.get_item_rect_size(self.parent)
+        with dpg.table(header_row=False, parent=self.parent):
+            dpg.add_table_column(width_stretch=True) # Main Content
+            dpg.add_table_column(width_fixed=True, init_width_or_weight=300) # Sidebar
+            with dpg.table_row(tag=self.row_name):
+                canvas = FinCanvas(self.row_name, w-350, h-50, 0, 0)
+                canvas.setup_canvas()
+                FinAccordionView(-1, self.row_name, canvas).show_options()
+            
+            
 

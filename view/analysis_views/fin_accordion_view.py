@@ -36,10 +36,9 @@ class FinAccordionView(ExperimentsOptionsMasterView):
     def __render_accordion(self):
         with dpg.child_window(tag=self.view_name,
             width=self.width,
-            autosize_y=True,
+            autosize_y=False,
             always_use_window_padding=True,
             show=False,
-            pos= self.pos,
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
                     dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=f"geometry_type_{self.unique_id}", callback=self.__change_geometry)
