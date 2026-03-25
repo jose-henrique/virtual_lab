@@ -9,10 +9,10 @@ class FinCanvas(CanvaHandler):
         self.unique_id = str(int(time.time()))
         self.name = f"fin_canva_{self.unique_id}"
         super().__init__(parent, width, height, offset_x,offset_y)
-        self.fin_width = 400
-        self.fin_height = 60
-        self.base_width = 20
-        self.base_height = 90
+        self.fin_width = 800
+        self.fin_height = 120
+        self.base_width = 40
+        self.base_height = 180
         self.object_width = self.base_width + self.fin_width
         self.object_height = self.base_height
     
@@ -97,12 +97,12 @@ class FinCanvas(CanvaHandler):
         self.second_horizontal_bar_pos_y = fin_y_position + fin_height
         self.vertical_dimension_pos = horizontal_bars_x+horizontal_bars_width-20
         
-        self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, (fin_y_position -30)], [self.first_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
-        self.graphic_handler.draw_line([self.second_vertical_bar_pos_x, (fin_y_position -30)], [self.second_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
+        #self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, (fin_y_position -30)], [self.first_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
+        #self.graphic_handler.draw_line([self.second_vertical_bar_pos_x, (fin_y_position -30)], [self.second_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
         self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, self.horzontal_dimension_pos], [self.second_vertical_bar_pos_x, self.horzontal_dimension_pos], color=(255, 255, 255))
         
-        self.graphic_handler.draw_line([horizontal_bars_x, self.first_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.first_horizontal_bar_pos_y], color=(255, 255, 255))
-        self.graphic_handler.draw_line([horizontal_bars_x, self.second_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.second_horizontal_bar_pos_y], color=(255, 255, 255))
+        #self.graphic_handler.draw_line([horizontal_bars_x, self.first_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.first_horizontal_bar_pos_y], color=(255, 255, 255))
+        #self.graphic_handler.draw_line([horizontal_bars_x, self.second_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.second_horizontal_bar_pos_y], color=(255, 255, 255))
         self.graphic_handler.draw_line([self.vertical_dimension_pos, self.first_horizontal_bar_pos_y], [self.vertical_dimension_pos, self.second_horizontal_bar_pos_y], color=(255, 255, 255))
         
     
