@@ -1,12 +1,10 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
-import uuid
-import config
 
 from model.utils.font_manager import FontManager
 
 class SelectAnalyze:
-    def __init__(self, sidebar):
+    def __init__(self, sidebar, analysis_options, controller):
         self.modal_name = "select_analyze_modal"
         self.icons = FontManager().get("icons_solid_base")
         self.loadedFont = FontManager().get("text_roboto_regular_base")
@@ -15,7 +13,8 @@ class SelectAnalyze:
         self.pos_x = 0
         self.pos_y = 0
         self.sidebar = sidebar
-        self.analzis_options = config.ANALYSIS_OPTIONS
+        self.analzis_options = analysis_options
+        self.analysis_controller = controller
 
         with dpg.theme() as self.button_new_theme:
             with dpg.theme_component(dpg.mvButton):
@@ -58,7 +57,6 @@ class SelectAnalyze:
         self.pos_x = (viewport_width // 2) - (self.width_window // 2)
         self.pos_y = (viewport_height // 2) - (self.height_window // 2)
 
-    def __selected_analyze(self, sender, app_data):
-        analyze = self.analzis_options[sender]
-        self.sidebar.add_analyze(analyze.get("label"), f"{analyze.get("tag")}_{uuid.uuid4()}", sender)
+    def __selected_analyze(self, sender, app_data, user_data):
+        self.analysis_controller.add_new_analyse(self.sidebar, sender)
         dpg.configure_item(self.modal_name, show=False)

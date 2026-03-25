@@ -1,19 +1,19 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
-from view.select_analyze import SelectAnalyze
 from view.analysis_views.fin_simulation_view import FinSimluationView
+from controller.analysis_controller import AnalysisController
 
 
 
 class SideBar:
     def __init__(self, tag, content_container):
-        self.select_analyze = SelectAnalyze(self)
         self.width = 225
         self.content_container = content_container
         self.tag = tag
         self.tabs_group = "tabs_group"
         self.icons = FontManager().get("icons_solid_base")
+        self.analysis_controller = AnalysisController(self)
         
         with dpg.theme() as self.button_new_theme:
             with dpg.theme_component(dpg.mvButton):
@@ -45,7 +45,7 @@ class SideBar:
     def __render_sidebar(self):
         loadedFont = FontManager().get("text_roboto_regular_base")
         with dpg.child_window(width=self.width, height=-1, tag=self.tag):
-                dpg.add_button(label=_("+ NEW ANALYSE"), tag="button_new_analysis", width=-1, callback=self.select_analyze.render_modal)
+                dpg.add_button(label=_("+ NEW ANALYSE"), tag="button_new_analysis", width=-1, callback=self.analysis_controller.open_new_analysis_modal)
                 with dpg.group(tag=self.tabs_group):
                     self.add_analyze(_("\uf1fe RESULTS"), "results_button","results", 30)
 
@@ -63,15 +63,11 @@ class SideBar:
 
     def __select_tab(self, sender, app_data, user_data):
         children = dpg.get_item_children(self.tabs_group, slot=1)
-        self.__load_screen(user_data)
+        self.analysis_controller.change_active_analyze(sender,user_data, dpg.get_item_rect_size(self.content_container), self.content_container)
         for child_tag in children:
             if dpg.get_item_alias(child_tag) == sender:
                 dpg.bind_item_theme(child_tag, self.tab_active)
             else:
                 dpg.bind_item_theme(child_tag, self.button_options)
-    
-    def __load_screen(self, data):
-        w, h = dpg.get_item_rect_size(self.content_container)
-        if data == "new_fin_analyze":
-            FinSimluationView(self.content_container, w, h)
+        
     
