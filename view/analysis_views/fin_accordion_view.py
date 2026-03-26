@@ -42,19 +42,11 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
                     dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=f"geometry_type_{self.unique_id}", callback=self.__change_geometry)
-                    self.input_components.input_float(f"radius_{self.unique_id}", "mm", 0.5, "Radius", 0, 1000, self.__update_fin_radius, 1)
-                    # with dpg.group(tag=f"radius_group_{self.unique_id}", show=False):
-                    #     dpg.add_text(_("Radius (mm)"))
-                    #     dpg.add_input_float(label="", tag=f"radius_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1, callback=self.__update_fin_radius)
-                    with dpg.group(tag=f"square_group_a_{self.unique_id}", show=False):
-                        dpg.add_text(_("A Length (mm)"))
-                        dpg.add_input_float(label="", tag=f"a_length_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
-                    with dpg.group(tag=f"square_group_b_{self.unique_id}", show=False):
-                        dpg.add_text(_("B Length (mm)"))
-                        dpg.add_input_float(label="", tag=f"b_length_{self.unique_id}", min_value=0,min_clamped=True, max_value=1000, step=0.5, step_fast=1)
-                    with dpg.group(tag=f"length_group_{self.unique_id}"):
-                        dpg.add_text(_("Length (mm)"))
-                        dpg.add_input_float(label= "", tag=f"length_{self.unique_id}", min_value=0,min_clamped=True, max_value=10000, step=1, step_fast=10, callback=self.__update_fin_legth)
+                    self.radius = self.input_components.input_float(f"radius_{self.unique_id}", "mm", 0.5, "Radius", 0, 1000, self.__update_fin_radius, 1, 0,False)
+                    with dpg.group(tag=f"square_group_{self.unique_id}", show=False):
+                        self.input_components.input_float(f"a_length_{self.unique_id}", "mm", 0.5, "A Length", 0, 1000, None, 1, 0)
+                        self.input_components.input_float(f"b_length_{self.unique_id}", "mm", 0.5, "B Length", 0, 1000, None, 1, 0)
+                    self.input_components.input_float(f"length_{self.unique_id}", "mm", 0.5, "Length", 0, 1000, None, 1, 0)
                 with dpg.collapsing_header(label=_("Physical Properties"), default_open=True):
                     properties = PropertiesGetter()
                     dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag=f"material_{self.unique_id}")
@@ -109,13 +101,11 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         
     def __change_geometry(self, sender, geometry_type):
         if geometry_type == "Rectangle":
-            dpg.show_item(f"square_group_a_{self.unique_id}")
-            dpg.show_item(f"square_group_b_{self.unique_id}")
-            dpg.hide_item(f"radius_group_{self.unique_id}")
+            dpg.show_item(f"square_group_{self.unique_id}")
+            dpg.hide_item(self.radius)
         elif geometry_type == "Circle":
-            dpg.show_item(f"radius_group_{self.unique_id}")
-            dpg.hide_item(f"square_group_a_{self.unique_id}")
-            dpg.hide_item(f"square_group_b_{self.unique_id}")
+            dpg.show_item(self.radius)
+            dpg.hide_item(f"square_group_{self.unique_id}")
 
     def __convert_geometry_type(self, geometry_type):
         if geometry_type == "Rectangle":

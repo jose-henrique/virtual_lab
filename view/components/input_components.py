@@ -29,8 +29,9 @@ class InputComponents:
                 # Padding to make it look like a label
                 dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 4, 5)
 
-    def input_float(self, tag, unit, step, label, min, max, callback, step_fast, default_val=0):
-        with dpg.group():
+    def input_float(self, tag, unit, step, label, min, max, callback, step_fast, default_val=0, show=True):
+        print(show)
+        with dpg.group(show=show) as group:
             dpg.add_text(label, color=(150, 150, 150))
             with dpg.group(horizontal=True,horizontal_spacing=0):
                 
@@ -57,4 +58,6 @@ class InputComponents:
         dpg.bind_item_theme(p_btn, self.button_theme)  
         dpg.bind_item_theme(tag, self.input_theme)
         dpg.bind_item_theme(label, self.text_bg_theme)
+
+        return group
     
