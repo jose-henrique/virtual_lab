@@ -59,7 +59,6 @@ class SideBar:
         dpg.add_spacer(height=space, parent=self.tabs_group)
         button = dpg.add_button(label=label, tag=tag, width=-1, parent=self.tabs_group, callback=self.__select_tab, user_data=analysis_type)
         dpg.bind_item_font(button, self.icons)
-        #self.__select_tab(tag)
 
     def __select_tab(self, sender, app_data, user_data):
         children = dpg.get_item_children(self.tabs_group, slot=1)
