@@ -16,7 +16,8 @@ class AnalysisController:
 
     def add_new_analyse(self, sidebar, analyze_type):
         analyze = self.analyze_model.get_analyze_options().get(analyze_type)
-        sidebar.add_analyze(analyze.get("label"), f"{analyze.get("tag")}_{uuid.uuid4()}", analyze_type)
+        analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
+        sidebar.add_analyze(f"{analyze.get('label')} {analyze_number}", f"{analyze.get('tag')}_{uuid.uuid4()}", analyze_type)
 
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
         analyze = self.__create_analyze_view(analyze_type, size, container)
