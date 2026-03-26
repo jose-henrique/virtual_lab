@@ -28,6 +28,9 @@ class AnalysisController:
         
         self.__update_screen()
 
+    def run_analyze(self, analyze_id):
+        pass
+
     def __update_screen(self):
         for analyze_id, analyze_data in self.analyze_state_model.get_avaiable_analyzes().items():
             if analyze_id == self.analyze_state_model.active_analyze:
