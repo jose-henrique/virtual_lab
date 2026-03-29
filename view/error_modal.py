@@ -17,13 +17,13 @@ class ErrorModal:
             self.__render_errors(errors_array)
         else:
             loadedFont = FontManager().get("text_roboto_regular_medium")
-            with dpg.theme() as red_theme:
+            with dpg.theme() as orange_theme:
                     with dpg.theme_component(dpg.mvAll):
-                        dpg.add_theme_color(dpg.mvThemeCol_TitleBg, (200, 50, 50, 255))  
-                        dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, (255, 100, 100, 255))
+                        dpg.add_theme_color(dpg.mvThemeCol_TitleBg, (255, 145, 65, 255))  
+                        dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, (255, 145, 65, 255))
             
             
-            with dpg.window(label=_("ERROR"), 
+            with dpg.window(label=_("ERROR WINDOW"), 
             tag=self.window_name,
             width=self.width_window,
             height=self.height_window,
@@ -31,7 +31,7 @@ class ErrorModal:
             no_resize=True,
             pos=[self.pos_x,self.pos_y]) as window:
                 self.__render_errors(errors_array)
-                dpg.bind_item_theme(self.window_name, red_theme)
+                dpg.bind_item_theme(self.window_name, orange_theme)
                 dpg.bind_item_font(self.window_name, loadedFont)
 
     
@@ -40,6 +40,7 @@ class ErrorModal:
         for idx, error in enumerate(errors):
             with dpg.group(parent=self.window_name, horizontal=True):
                 dpg.add_spacer(width=20) 
+                dpg.add_text("[ERROR]: ", color=(220, 0, 0))
                 dpg.add_text(error, wrap=self.width_window - 40)
         
         with dpg.group(parent=self.window_name, horizontal=True):
