@@ -4,8 +4,9 @@ from model.utils.font_manager import FontManager
 
 
 class TopBar:
-    def __init__(self, tag):
+    def __init__(self, tag, analysis_controller):
         self.height = 50
+        self.analysis_controller = analysis_controller
         with dpg.theme() as self.sidebar_bg_theme:
             with dpg.theme_component(dpg.mvChildWindow):
                 dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (0, 0, 0, 255))
@@ -30,7 +31,7 @@ class TopBar:
                 with dpg.group(horizontal=True):
                     dpg.add_text(_("THERMAL ANALYSIS"), color=(255, 140, 65), tag="application_title") # Section Header
                     dpg.add_spacer(width=650)
-                    dpg.add_button(label=_("\uf04b RUN ANALYSE"), tag="button_run", width=120)
+                    dpg.add_button(label=_("\uf04b RUN ANALYSE"), tag="button_run", width=120, callback=self.analysis_controller.run_analyze)
                     dpg.add_button(label=_("\uf6dd EXPORT DATA"), tag="button_data", width=120)
                     dpg.add_button(label=_("\uf03e EXPORT IMAGE"), tag="button_image", width=120)
         dpg.bind_item_font("application_title", loadedFont)

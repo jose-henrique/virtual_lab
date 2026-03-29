@@ -8,6 +8,9 @@ class AnalyzeStateModel:
     
     def set_active_analyze(self, analyze):
         self.active_analyze = analyze
+
+    def get_active_analyze(self):
+        return self.avaiable_analyzes[self.active_analyze]
     
     def add_analyze(self, analyze_id, analyze_data):
         self.avaiable_analyzes[analyze_id] = analyze_data

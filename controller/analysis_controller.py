@@ -5,13 +5,14 @@ from model.analyze_state_model import AnalyzeStateModel
 from view.analysis_views.fin_simulation_view import FinSimluationView
 
 class AnalysisController:
-    def __init__(self, sidebar):
+    def __init__(self):
         self.analyze_model = AnalyzeModel()
-        self.select_analyze = SelectAnalyze(sidebar, self.analyze_model.get_analyze_options(), self)
         self.analyze_state_model = AnalyzeStateModel()
 
 
     def open_new_analysis_modal(self, sender, app_data, user_data):
+        sidebar = user_data
+        self.select_analyze = SelectAnalyze(sidebar, self.analyze_model.get_analyze_options(), self)
         self.select_analyze.render_modal()
 
     def add_new_analyse(self, sidebar, analyze_type):
@@ -29,8 +30,10 @@ class AnalysisController:
         
         self.__update_screen()
 
-    def run_analyze(self, analyze_id):
-        pass
+    def run_analyze(self):
+        active_analyze = self.analyze_state_model.get_active_analyze()
+        if active_analyze is not None:
+            active_analyze["view"].run_analyze()
 
     def __update_screen(self):
         for analyze_id, analyze_data in self.analyze_state_model.get_avaiable_analyzes().items():

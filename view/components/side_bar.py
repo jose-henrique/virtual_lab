@@ -2,18 +2,18 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
 from view.analysis_views.fin_simulation_view import FinSimluationView
-from controller.analysis_controller import AnalysisController
+
 
 
 
 class SideBar:
-    def __init__(self, tag, content_container):
+    def __init__(self, tag, content_container, analysis_controller):
         self.width = 225
         self.content_container = content_container
         self.tag = tag
         self.tabs_group = "tabs_group"
         self.icons = FontManager().get("icons_solid_base")
-        self.analysis_controller = AnalysisController(self)
+        self.analysis_controller = analysis_controller
         
         with dpg.theme() as self.button_new_theme:
             with dpg.theme_component(dpg.mvButton):
@@ -40,12 +40,11 @@ class SideBar:
                 dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 12, 8)
                 dpg.add_theme_color(dpg.mvThemeCol_Text, (0, 0, 0, 255))
                 dpg.add_theme_color(dpg.mvThemeCol_TextSelectedBg, (255, 140, 65, 255))
-        self.__render_sidebar()
 
-    def __render_sidebar(self):
+    def render_sidebar(self):
         loadedFont = FontManager().get("text_roboto_regular_base")
         with dpg.child_window(width=self.width, height=-1, tag=self.tag):
-                dpg.add_button(label=_("+ NEW ANALYSE"), tag="button_new_analysis", width=-1, callback=self.analysis_controller.open_new_analysis_modal)
+                dpg.add_button(label=_("+ NEW ANALYSE"), tag="button_new_analysis", width=-1, callback=self.analysis_controller.open_new_analysis_modal, user_data=self)
                 with dpg.group(tag=self.tabs_group):
                     self.add_analyze(_("\uf1fe RESULTS"), "results_button","results", 30)
 

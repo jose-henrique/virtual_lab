@@ -4,16 +4,19 @@ from view.simulation_window import SimulationWindow
 from view.components.top_bar import TopBar
 from view.components.side_bar import SideBar
 from view.canvas.fin_canvas import FinCanvas
+from controller.analysis_controller import AnalysisController
 
 
 class HomeView:
     def __init__(self):
         self.main_window_name = "main_layout_window"
         self.content_continer = "conntent_container"
+        self.analysis_controller = AnalysisController()
+        self.sidebar = SideBar(tag="side_bar", content_container=self.content_continer, analysis_controller=self.analysis_controller)
         with dpg.window(tag=self.main_window_name, no_title_bar=True, no_move=True):
-            TopBar("top_bar")
+            TopBar("top_bar", self.analysis_controller)
             with dpg.group(horizontal=True, horizontal_spacing=0):
-                self.sidebar = SideBar(tag="side_bar", content_container=self.content_continer)
+                self.sidebar.render_sidebar()
                 with dpg.child_window(tag=self.content_continer, width=-1, height=-1):
                         pass
         dpg.set_primary_window("main_layout_window", True)
