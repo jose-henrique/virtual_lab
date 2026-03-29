@@ -14,9 +14,9 @@ class TopBar:
         
         with dpg.theme() as self.action_buttons:
             with dpg.theme_component(dpg.mvButton):
-                dpg.add_theme_color(dpg.mvThemeCol_Button, (0, 0, 0, 255))        # Orange
-                dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (50, 50, 50, 255)) # Lighter Orange
-                dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, (20, 20, 20, 255))   # Darker Orange
+                dpg.add_theme_color(dpg.mvThemeCol_Button, (0, 0, 0, 255)) 
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonHovered, (50, 50, 50, 255))
+                dpg.add_theme_color(dpg.mvThemeCol_ButtonActive, (20, 20, 20, 255))
                 dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 12, 8)
                 dpg.add_theme_color(dpg.mvThemeCol_Text, (255, 255, 255, 255)) 
                 dpg.add_theme_style(dpg.mvStyleVar_FrameBorderSize, 1.0)
