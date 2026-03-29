@@ -9,10 +9,11 @@ class FinCanvas(CanvaHandler):
         self.unique_id = str(int(time.time()))
         self.name = f"fin_canva_{self.unique_id}"
         super().__init__(parent, width, height, offset_x,offset_y)
-        self.fin_width = 800
-        self.fin_height = 120
-        self.base_width = 40
-        self.base_height = 180
+    
+        self.fin_width = width/1.5
+        self.fin_height = height/6.5
+        self.base_width = width/32
+        self.base_height = height/4
         self.object_width = self.base_width + self.fin_width
         self.object_height = self.base_height
     
@@ -25,7 +26,7 @@ class FinCanvas(CanvaHandler):
     
     def set_base_temp(self, temp):
         dpg.delete_item(f"base_temperature_label_{self.unique_id}")
-        self.graphic_handler.draw_text([(self.width -self.object_width)/2, 390], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"base_temperature_label_{self.unique_id}")
+        self.graphic_handler.draw_text([(self.width -self.object_width)/2, ((self.height/2)+(self.base_height/2))], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"base_temperature_label_{self.unique_id}")
         
     def set_fin_length(self, legth):
         dpg.delete_item(f"fin_length_label_{self.unique_id}")
@@ -90,19 +91,16 @@ class FinCanvas(CanvaHandler):
         self.first_vertical_bar_pos_x = fin_x_position
         self.second_vertical_bar_pos_x = fin_x_position + self.fin_width
         vertical_bar_height = 100
-        self.horzontal_dimension_pos = fin_y_position - 80
-        horizontal_bars_x = self.second_vertical_bar_pos_x + 30
+        self.horzontal_dimension_pos = fin_y_position - 50
+        horizontal_bars_x = self.second_vertical_bar_pos_x
         horizontal_bars_width = 40
         self.first_horizontal_bar_pos_y = fin_y_position
         self.second_horizontal_bar_pos_y = fin_y_position + fin_height
         self.vertical_dimension_pos = horizontal_bars_x+horizontal_bars_width-20
         
-        #self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, (fin_y_position -30)], [self.first_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
-        #self.graphic_handler.draw_line([self.second_vertical_bar_pos_x, (fin_y_position -30)], [self.second_vertical_bar_pos_x, (fin_y_position-vertical_bar_height)], color=(255, 255, 255))
+        
         self.graphic_handler.draw_line([self.first_vertical_bar_pos_x, self.horzontal_dimension_pos], [self.second_vertical_bar_pos_x, self.horzontal_dimension_pos], color=(255, 255, 255))
         
-        #self.graphic_handler.draw_line([horizontal_bars_x, self.first_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.first_horizontal_bar_pos_y], color=(255, 255, 255))
-        #self.graphic_handler.draw_line([horizontal_bars_x, self.second_horizontal_bar_pos_y], [(horizontal_bars_x+horizontal_bars_width), self.second_horizontal_bar_pos_y], color=(255, 255, 255))
         self.graphic_handler.draw_line([self.vertical_dimension_pos, self.first_horizontal_bar_pos_y], [self.vertical_dimension_pos, self.second_horizontal_bar_pos_y], color=(255, 255, 255))
         
     
