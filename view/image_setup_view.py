@@ -4,14 +4,17 @@ from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
 from view.error_modal import ErrorModal
 from view.success_modal import SuccessModal
+from controller.images_controller import ImagesController
 
 
 class ImageSetupView():
-    def __init__(self, canva):
-        self.canva = canva
+    def __init__(self, active_canva):
         self.window_name = "image_setup"
+        self.images_controller = ImagesController(active_canva, self.window_name)
         self.width_window = 300
-        self.height_window = 245
+        self.height_window = 335
+        self.icons_font = FontManager().get("icons_solid_base")
+        self.text_font = FontManager().get("text_roboto_regular_base")
         self.pos_x = 0
         self.pos_y = 0
         self.resolution_mapping = {
@@ -27,24 +30,32 @@ class ImageSetupView():
             "Black": (0, 0, 0),
             "Transparent": (0, 0, 0, 0)
         }
+
+
     def base_window(self):
         self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
-            dpg.configure_item(self.window_name, show=True)
-            dpg.focus_item(self.window_name)
+            dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
         else:
-            icons_font = FontManager().get("icons_solid_small")
-            text_font = FontManager().get("text_roboto_base")
-            with dpg.window(label=_("Image Setup"), 
-            tag=self.window_name,
-            width=self.width_window,
-            height=self.height_window,
-            no_resize=True,
-            no_collapse=True,
-            pos=[self.pos_x,self.pos_y]):
+            with dpg.window(label=_("EXPORT IMAGE"), modal=True, tag=self.window_name,  no_resize=True,
+                        no_title_bar=True, width=self.width_window , height=self.height_window, pos=[self.pos_x, self.pos_y]):
+                
+                # --- CUSTOM HEADER ---
+                with dpg.group(horizontal=True):
+                    dpg.add_text(_("\uf03e EXPORT IMAGE"), color=(255, 140, 65), tag="header_image_setup")
+                    dpg.add_spacer(width=self.width_window-190) # Push 'X' to the right
+                    dpg.add_button(label="X", callback=lambda: dpg.configure_item(self.window_name, show=False), 
+                                small=True)
+                dpg.add_separator()
+                dpg.add_spacer(height=20)
+
                 self.__render_options()
-                dpg.bind_item_font(self.window_name,text_font)
-                dpg.bind_item_font("button_folder",icons_font)
+                    
+                
+            dpg.bind_item_font("header_image_setup", self.icons_font)
+            dpg.bind_item_font("options", self.text_font)
+            dpg.bind_item_font(self.window_name,self.text_font)   
+                
     
     def __render_options(self):
         with dpg.group(tag="location_group"):
@@ -56,16 +67,17 @@ class ImageSetupView():
         with dpg.group(tag="name_group"):
             dpg.add_text(_("Image Name"))
             dpg.add_input_text(label="", default_value="my_image", tag="filename", width=self.width_window-20,enabled=True)
-            dpg.add_spacer(height=5)
-        with dpg.group(tag="background_group", width=self.width_window-20):
-            dpg.add_text(_("Image Background Color"))
-            dpg.add_combo(list(self.background_color_mapping.keys()), default_value=_("Select A Background"), tag="background_color")
         dpg.add_spacer(height=5)
         with dpg.group(tag="size_group", width=self.width_window-20):
             dpg.add_text(_("Image Resolution"))
             dpg.add_combo(list(self.resolution_mapping.keys()), default_value=_("Select A Resolution"), tag="image_size")
+        dpg.add_spacer(height=5)
+        with dpg.group(tag="background_group", width=self.width_window-20):
+            dpg.add_text(_("Image Background Color"))
+            dpg.add_combo(list(self.background_color_mapping.keys()), default_value=_("Select A Background"), tag="background_color")
             
         dpg.add_spacer(height=3)
+        dpg.bind_item_font("button_folder",self.icons_font)    
         self.__bottom_window()
             
 
@@ -82,19 +94,7 @@ class ImageSetupView():
             
     def __save_image(self):
         user_inputs = self.__get_user_inputs()
-        results = self.canva.save_image(user_inputs)
-        if results["status"] == 0:
-            self.__success_image_save()
-        elif results["status"] == -1:
-            self.__error_image_save(results["errors"])
-        
-    def __success_image_save(self):
-        dpg.configure_item(self.window_name, show=False)
-        SuccessModal().show_message(_("Image Saved"))
-    
-    def __error_image_save(self, errors):
-        error_modal = ErrorModal()
-        error_modal.show_errors(errors)    
+        self.images_controller.save_image(user_inputs) 
 
     def __get_user_inputs(self):
         location = dpg.get_value("location")

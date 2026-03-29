@@ -1,6 +1,8 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
+from view.image_setup_view import ImageSetupView
+from view.error_modal import ErrorModal
 
 
 class TopBar:
@@ -33,7 +35,7 @@ class TopBar:
                     dpg.add_spacer(width=650)
                     dpg.add_button(label=_("\uf04b RUN ANALYSE"), tag="button_run", width=120, callback=self.analysis_controller.run_analyze)
                     dpg.add_button(label=_("\uf6dd EXPORT DATA"), tag="button_data", width=120)
-                    dpg.add_button(label=_("\uf03e EXPORT IMAGE"), tag="button_image", width=120)
+                    dpg.add_button(label=_("\uf03e EXPORT IMAGE"), tag="button_image", width=120, callback=self.__handle_export_image)
         dpg.bind_item_font("application_title", loadedFont)
         dpg.bind_item_font("button_run", icons)
         dpg.bind_item_theme("button_run", self.action_buttons)
@@ -42,3 +44,12 @@ class TopBar:
         dpg.bind_item_font("button_image", icons)
         dpg.bind_item_theme("button_image", self.action_buttons)
         dpg.bind_item_theme(tag, self.sidebar_bg_theme)
+
+    def __handle_export_image(self):
+        if self.analysis_controller.current_analyze() is not None:
+            current_canva = self.analysis_controller.current_analyze().get("view").get_canva()
+            image_view = ImageSetupView(current_canva)
+            image_view.base_window()
+        else:
+            error_modal = ErrorModal()
+            error_modal.show_errors([_("Selecte an Analyze First")])

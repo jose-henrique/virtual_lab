@@ -37,6 +37,9 @@ class FinSimluationView:
 
     def run_analyze(self):
         self.fin_accordion_view.process_results()
+
+    def get_canva(self):
+        return self.canvas
             
             
 

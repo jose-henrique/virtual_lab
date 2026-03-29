@@ -9,6 +9,9 @@ class AnalysisController:
         self.analyze_model = AnalyzeModel()
         self.analyze_state_model = AnalyzeStateModel()
 
+    def current_analyze(self):
+        return self.analyze_state_model.get_active_analyze()
+
 
     def open_new_analysis_modal(self, sender, app_data, user_data):
         sidebar = user_data
@@ -33,7 +36,7 @@ class AnalysisController:
     def run_analyze(self):
         active_analyze = self.analyze_state_model.get_active_analyze()
         if active_analyze is not None:
-            active_analyze["view"].run_analyze()
+            active_analyze["view"].run_analyze()           
 
     def __update_screen(self):
         for analyze_id, analyze_data in self.analyze_state_model.get_avaiable_analyzes().items():

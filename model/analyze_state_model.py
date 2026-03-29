@@ -10,6 +10,8 @@ class AnalyzeStateModel:
         self.active_analyze = analyze
 
     def get_active_analyze(self):
+        if self.active_analyze is None:
+            return None
         return self.avaiable_analyzes[self.active_analyze]
     
     def add_analyze(self, analyze_id, analyze_data):

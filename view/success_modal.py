@@ -4,7 +4,7 @@ from model.utils.font_manager import FontManager
 
 class SuccessModal:
     def __init__(self):
-        self.window_name = "sucess_modal"
+        self.window_name = "sucess_modal_teste"
         self.width_window = 500
         self.height_window = 250
         self.pos_x = 0
@@ -14,6 +14,7 @@ class SuccessModal:
         self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
+            dpg.focus_item(self.window_name)
             self.__render_message(message)
         else:
             loadedFont = FontManager().get("text_roboto_medium")

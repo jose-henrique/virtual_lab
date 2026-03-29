@@ -35,7 +35,7 @@ class SelectAnalyze:
                 # --- CUSTOM HEADER ---
                 with dpg.group(horizontal=True):
                     dpg.add_text("\uf2c9 NEW ANALYZE", color=(255, 140, 65), tag="header_title")
-                    dpg.add_spacer(width=-1) # Push 'X' to the right
+                    dpg.add_spacer(width=self.width_window-190) # Push 'X' to the right
                     dpg.add_button(label="X", callback=lambda: dpg.configure_item(self.modal_name, show=False), 
                                 small=True)
                 dpg.add_separator()
