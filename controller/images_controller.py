@@ -4,13 +4,12 @@ from view.error_modal import ErrorModal
 from view.success_modal import SuccessModal
 
 class ImagesController:
-    def __init__(self, canva, setup_window):
-        self.canva = canva
+    def __init__(self, setup_window):
         self.setup_window = setup_window
     
     
-    def save_image(self, data):
-        results = self.canva.save_image(data)
+    def save_image(self, canva, data):
+        results = canva.save_image(data)
         if results["status"] == 0:
             self.__success_image_save()
         elif results["status"] == -1:

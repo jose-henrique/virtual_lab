@@ -47,8 +47,7 @@ class TopBar:
 
     def __handle_export_image(self):
         if self.analysis_controller.current_analyze() is not None:
-            current_canva = self.analysis_controller.current_analyze().get("view").get_canva()
-            image_view = ImageSetupView(current_canva)
+            image_view = ImageSetupView(self.analysis_controller)
             image_view.base_window()
         else:
             error_modal = ErrorModal()

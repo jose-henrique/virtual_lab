@@ -26,7 +26,7 @@ class FinCanvas(CanvaHandler):
     
     def set_base_temp(self, temp):
         dpg.delete_item(f"base_temperature_label_{self.unique_id}")
-        self.graphic_handler.draw_text([(self.width -self.object_width)/2, ((self.height/2)+(self.base_height/2))], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"base_temperature_label_{self.unique_id}")
+        self.graphic_handler.draw_text([(self.width -self.object_width)/2, ((self.height/2)+(self.base_height/2)+11)], f"{temp} °C", size=17, color=(255, 255, 255), parent=self.name, tag=f"base_temperature_label_{self.unique_id}")
         
     def set_fin_length(self, legth):
         dpg.delete_item(f"fin_length_label_{self.unique_id}")

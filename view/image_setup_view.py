@@ -2,15 +2,14 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
-from view.error_modal import ErrorModal
-from view.success_modal import SuccessModal
 from controller.images_controller import ImagesController
 
 
 class ImageSetupView():
-    def __init__(self, active_canva):
+    def __init__(self, analysis_controller):
+        self.analysis_controller = analysis_controller
         self.window_name = "image_setup"
-        self.images_controller = ImagesController(active_canva, self.window_name)
+        self.images_controller = ImagesController(self.window_name)
         self.width_window = 300
         self.height_window = 335
         self.icons_font = FontManager().get("icons_solid_base")
@@ -92,9 +91,10 @@ class ImageSetupView():
         dpg.set_value("location", location)
     
             
-    def __save_image(self):
+    def __save_image(self, active_canva):
         user_inputs = self.__get_user_inputs()
-        self.images_controller.save_image(user_inputs) 
+        current_canva = self.analysis_controller.current_analyze().get("view").get_canva()
+        self.images_controller.save_image(current_canva, user_inputs) 
 
     def __get_user_inputs(self):
         location = dpg.get_value("location")
