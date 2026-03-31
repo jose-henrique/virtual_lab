@@ -24,8 +24,8 @@ class AnalysisController:
         sidebar.add_analyze(f"{analyze.get('label')} {analyze_number}", f"{analyze.get('tag')}_{uuid.uuid4()}", analyze_type)
 
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
-        analyze = self.__create_analyze_view(analyze_type, size, container)
         if self.analyze_state_model.get_avaiable_analyzes().get(analyze_id) is None:
+            analyze = self.__create_analyze_view(analyze_type, size, container, analyze_id)
             self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True})
             self.analyze_state_model.set_active_analyze(analyze_id)
         else:
@@ -46,7 +46,7 @@ class AnalysisController:
                 analyze_data.get("view").hide_view()
 
 
-    def __create_analyze_view(self, analyze_type, size, container):
+    def __create_analyze_view(self, analyze_type, size, container, analyze_id):
         w, h = size
         if analyze_type == "new_fin_analyze":
-            return FinSimluationView(container, w, h)
+            return FinSimluationView(container, w, h, analyze_id)

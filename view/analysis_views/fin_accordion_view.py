@@ -8,11 +8,12 @@ from view.components.input_components import InputComponents
 
 
 class FinAccordionView(ExperimentsOptionsMasterView):
-    def __init__(self, width, parent, canva):
+    def __init__(self, width, parent, canva, analyze_id):
         super().__init__()
         self.input_components = InputComponents()
         self.width = width
         self.parent = parent
+        self.analyze_id = analyze_id
         self.view_name = f"fin_options_{self.unique_id}"
         self.canva = canva
         self.loadedFont = FontManager().get("text_roboto_base")
@@ -21,7 +22,7 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         super
         controller = FinAnalysesController()
         data = self.__capture_values()
-        data_analyses = controller.solve_analyses(data)
+        data_analyses = controller.solve_analyses(data, self.analyze_id)
         
         if data_analyses['status'] == 0:
             self.__success_callback(data_analyses)

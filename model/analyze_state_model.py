@@ -1,10 +1,21 @@
 class AnalyzeStateModel:
-    def __init__(self):
-        self.active_analyze = None
-        self.avaiable_analyzes = {}
+    _instance = None
+    # def __init__(self):
+    #     self.active_analyze = None
+    #     self.avaiable_analyzes = {}
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AnalyzeStateModel, cls).__new__(cls)
+            cls._instance.active_analyze = None
+            cls._instance.avaiable_analyzes = {}
+        return cls._instance
 
     def get_avaiable_analyzes(self):
         return self.avaiable_analyzes
+    
+    def get_analyze(self, analyze_id):
+        return self.avaiable_analyzes.get(analyze_id)
     
     def set_active_analyze(self, analyze):
         self.active_analyze = analyze

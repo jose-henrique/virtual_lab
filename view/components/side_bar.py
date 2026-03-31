@@ -1,7 +1,6 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
-from view.analysis_views.fin_simulation_view import FinSimluationView
 
 
 

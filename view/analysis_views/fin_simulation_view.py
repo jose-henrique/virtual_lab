@@ -7,14 +7,14 @@ import uuid
 
 class FinSimluationView:
 
-    def __init__(self, parent, width, height):
+    def __init__(self, parent, width, height, analyze_id):
         self.parent = parent
         self.width = width
         self.height = height
         w, h = dpg.get_item_rect_size(self.parent)
         self.row_name = f"main_row_fin_{uuid.uuid4()}"
         self.canvas = FinCanvas(self.row_name, w-350, h-50, 0, 0)
-        self.fin_accordion_view = FinAccordionView(-1, self.row_name, self.canvas)
+        self.fin_accordion_view = FinAccordionView(-1, self.row_name, self.canvas, analyze_id)
         self.__render_simulation()
     
 

@@ -1,4 +1,5 @@
 from gettext import gettext as _
+import tempfile
 
 class AnalyzeModel:
     def __init__(self):
@@ -22,3 +23,6 @@ class AnalyzeModel:
 
     def get_analyze_options(self):
         return self.analyze_options
+    
+    def save_analyze(self, analyze_id, analyze_data):
+        pass
