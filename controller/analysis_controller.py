@@ -1,13 +1,13 @@
 from view.select_analyze import SelectAnalyze
 import uuid
 from model.analyze_model import AnalyzeModel
-from model.analyze_state_model import AnalyzeStateModel
+from model.analyze_state_model import state_model
 from view.analysis_views.fin_simulation_view import FinSimluationView
 
 class AnalysisController:
     def __init__(self):
         self.analyze_model = AnalyzeModel()
-        self.analyze_state_model = AnalyzeStateModel()
+        self.analyze_state_model = state_model
 
     def current_analyze(self):
         return self.analyze_state_model.get_active_analyze()
@@ -25,8 +25,9 @@ class AnalysisController:
 
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
         if self.analyze_state_model.get_avaiable_analyzes().get(analyze_id) is None:
+            analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
             analyze = self.__create_analyze_view(analyze_type, size, container, analyze_id)
-            self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True})
+            self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True, "analyze_number": analyze_number})
             self.analyze_state_model.set_active_analyze(analyze_id)
         else:
             self.analyze_state_model.set_active_analyze(analyze_id)

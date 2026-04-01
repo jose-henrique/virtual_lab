@@ -1,15 +1,7 @@
 class AnalyzeStateModel:
-    _instance = None
-    # def __init__(self):
-    #     self.active_analyze = None
-    #     self.avaiable_analyzes = {}
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(AnalyzeStateModel, cls).__new__(cls)
-            cls._instance.active_analyze = None
-            cls._instance.avaiable_analyzes = {}
-        return cls._instance
+    def __init__(self):
+        self.active_analyze = None
+        self.avaiable_analyzes = {}
 
     def get_avaiable_analyzes(self):
         return self.avaiable_analyzes
@@ -30,3 +22,6 @@ class AnalyzeStateModel:
 
     def current_analyze_number(self, analyze_type):
         return len([analyze for analyze in self.avaiable_analyzes.values() if analyze.get("type") == analyze_type])
+    
+
+state_model = AnalyzeStateModel()
