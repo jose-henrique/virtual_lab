@@ -1,5 +1,6 @@
 from gettext import gettext as _
 import tempfile
+import json
 
 class AnalyzeModel:
     def __init__(self):
@@ -24,5 +25,18 @@ class AnalyzeModel:
     def get_analyze_options(self):
         return self.analyze_options
     
-    def save_analyze(self, analyze_id, analyze_data):
-        pass
+    def save_analyze(self, analyze_id, analyze, analyze_data, results):
+        data = {
+            "analyze_number": analyze.get("analyze_number"),
+            "analyze_id": analyze_id,
+            "type": analyze.get("type"),
+            "analyze_data": analyze_data,
+            "results": results
+        }
+
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json') as temp_file:
+            json.dump(data, temp_file)
+            temp_file.seek(0)
+            
+            print(f"File created at: {temp_file.name}")
+            #print(f"Content: {temp_file.read()}")

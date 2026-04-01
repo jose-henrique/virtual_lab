@@ -1,6 +1,5 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
-from model.utils.font_manager import FontManager
 from view.analysis_views.fin_accordion_view import FinAccordionView
 from  view.canvas.fin_canvas import FinCanvas
 import uuid
