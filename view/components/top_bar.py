@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
 from view.image_setup_view import ImageSetupView
+from view.export_data_setup_view import ExportDataSetupView
 from view.error_modal import ErrorModal
 
 
@@ -34,7 +35,7 @@ class TopBar:
                     dpg.add_text(_("THERMAL ANALYSIS"), color=(255, 140, 65), tag="application_title") # Section Header
                     dpg.add_spacer(width=650)
                     dpg.add_button(label=_("\uf04b RUN ANALYSE"), tag="button_run", width=120, callback=self.analysis_controller.run_analyze)
-                    dpg.add_button(label=_("\uf6dd EXPORT DATA"), tag="button_data", width=120)
+                    dpg.add_button(label=_("\uf6dd EXPORT DATA"), tag="button_data", width=120, callback=self.__handle_export_data)
                     dpg.add_button(label=_("\uf03e EXPORT IMAGE"), tag="button_image", width=120, callback=self.__handle_export_image)
         dpg.bind_item_font("application_title", loadedFont)
         dpg.bind_item_font("button_run", icons)
@@ -49,6 +50,15 @@ class TopBar:
         if self.analysis_controller.current_analyze() is not None:
             image_view = ImageSetupView(self.analysis_controller)
             image_view.base_window()
+        else:
+            error_modal = ErrorModal()
+            error_modal.show_errors([_("Selecte an Analyze First")])
+
+
+    def __handle_export_data(self):
+        if self.analysis_controller.current_analyze() is not None:
+            data_view = ExportDataSetupView(self.analysis_controller)
+            data_view.base_window()
         else:
             error_modal = ErrorModal()
             error_modal.show_errors([_("Selecte an Analyze First")])

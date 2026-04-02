@@ -1,6 +1,8 @@
 from gettext import gettext as _
 import tempfile
 import json
+from model.analyze_state_model import state_model
+import os
 
 class AnalyzeModel:
     def __init__(self):
@@ -26,6 +28,8 @@ class AnalyzeModel:
         return self.analyze_options
     
     def save_analyze(self, analyze_id, analyze, analyze_data, results):
+        analyze_state_model = state_model
+        self.__remove_previous_file(analyze_id)
         data = {
             "analyze_number": analyze.get("analyze_number"),
             "analyze_id": analyze_id,
@@ -37,6 +41,15 @@ class AnalyzeModel:
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json') as temp_file:
             json.dump(data, temp_file)
             temp_file.seek(0)
-            
-            print(f"File created at: {temp_file.name}")
-            #print(f"Content: {temp_file.read()}")
+            analyze_state_model.avaiable_analyzes[analyze_id]["file_path"] = temp_file.name
+            print(f"Analyze data saved to {temp_file.name}")
+
+    
+    def __remove_previous_file(self, analyze_id):
+        analyze_state_model = state_model
+        previous_file_path = analyze_state_model.avaiable_analyzes[analyze_id].get("file_path")
+        if previous_file_path:
+            try:
+                os.remove(previous_file_path)
+            except OSError as e:
+                print(f"Error removing file {previous_file_path}: {e}")
