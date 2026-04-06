@@ -2,7 +2,7 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
-from controller.images_controller import ImagesController
+from controller.data_contoller import DataController
 
 
 class ExportDataSetupView():
@@ -10,9 +10,10 @@ class ExportDataSetupView():
         self.analysis_controller = analysis_controller
         self.window_name = "export_data_setup"
         self.width_window = 300
-        self.height_window = 335
+        self.height_window = 250
         self.icons_font = FontManager().get("icons_solid_base")
         self.text_font = FontManager().get("text_roboto_regular_base")
+        self.data_controller = DataController(self)
         self.pos_x = 0
         self.pos_y = 0
 
@@ -26,7 +27,7 @@ class ExportDataSetupView():
                 
                 # --- CUSTOM HEADER ---
                 with dpg.group(horizontal=True):
-                    dpg.add_text(_("\uf03e EXPORT IMAGE"), color=(255, 140, 65), tag="header_image_setup")
+                    dpg.add_text(_("\uf6dd EXPORT DATA"), color=(255, 140, 65), tag="header_image_setup")
                     dpg.add_spacer(width=self.width_window-190) # Push 'X' to the right
                     dpg.add_button(label="X", callback=lambda: dpg.configure_item(self.window_name, show=False), 
                                 small=True)
@@ -50,7 +51,7 @@ class ExportDataSetupView():
         dpg.add_spacer(height=5)
         with dpg.group(tag="data_name_group"):
             dpg.add_text(_("Image Name"))
-            dpg.add_input_text(label="", default_value="my_image", tag="data_filename", width=self.width_window-20,enabled=True)
+            dpg.add_input_text(label="", default_value="dataset", tag="data_filename", width=self.width_window-20,enabled=True)
             
         dpg.add_spacer(height=3)
         dpg.bind_item_font("button_folder",self.icons_font)    
@@ -65,19 +66,18 @@ class ExportDataSetupView():
     
     def __get_folder_location(self):
         location = LocationGetter().get_location()
-        dpg.set_value("location", location)
+        dpg.set_value("data_location", location)
     
             
-    def __export_data(self, active_canva):
-        pass
+    def __export_data(self):
+        user_inputs = self.__get_user_inputs()
+        data_file = self.analysis_controller.current_analyze().get("file_path")
+        self.data_controller.export_data(user_inputs, data_file)
 
     def __get_user_inputs(self):
-        location = dpg.get_value("location")
-        filename = dpg.get_value("filename")
-        image_size_key = dpg.get_value("image_size")
-        image_size = self.resolution_mapping.get(image_size_key, (640, 480))
-        background_color = self.background_color_mapping.get(dpg.get_value("background_color"), (0, 0, 0))    
-        return {"location": location, "filename": filename, "image_size": image_size, "background_color": background_color}
+        location = dpg.get_value("data_location")
+        filename = dpg.get_value("data_filename")
+        return {"location": location, "filename": filename}
           
     def __calculate_center_position(self):
         viewport_width = dpg.get_viewport_client_width()

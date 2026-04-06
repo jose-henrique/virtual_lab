@@ -4,39 +4,41 @@ from model.utils.font_manager import FontManager
 
 class ErrorModal:
     def __init__(self):
-        self.window_name = "error_modal"
+        self.window_name = dpg.generate_uuid()
         self.width_window = 500
         self.height_window = 250
-        self.pos_x = 0
-        self.pos_y = 0
+        self.pos_x = 100
+        self.pos_y = 100
+        self.text_font_error = FontManager().get("text_roboto_regular_medium")
     
     def show_errors(self, errors_array):
         self.__calculate_center_position()
         if dpg.does_item_exist(self.window_name):
-            dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
-            self.__render_errors(errors_array)
-        else:
-            loadedFont = FontManager().get("text_roboto_regular_medium")
-            with dpg.theme() as orange_theme:
+            dpg.delete_item(self.window_name)        
+    
+        with dpg.window(label=_("ERROR WINDOW"), 
+        tag=self.window_name,
+        width=self.width_window,
+        height=self.height_window,
+        modal=True,
+        no_resize=True,
+        pos=[self.pos_x,self.pos_y]) as self.window:
+            pass
+         
+        with dpg.theme() as orange_theme:
                     with dpg.theme_component(dpg.mvAll):
                         dpg.add_theme_color(dpg.mvThemeCol_TitleBg, (255, 145, 65, 255))  
                         dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, (255, 145, 65, 255))
-            
-            
-            with dpg.window(label=_("ERROR WINDOW"), 
-            tag=self.window_name,
-            width=self.width_window,
-            height=self.height_window,
-            modal=True,
-            no_resize=True,
-            pos=[self.pos_x,self.pos_y]) as window:
-                self.__render_errors(errors_array)
-                dpg.bind_item_theme(self.window_name, orange_theme)
-                dpg.bind_item_font(self.window_name, loadedFont)
+
+        self.__render_errors(errors_array)
+        dpg.bind_item_font(self.window_name, self.text_font_error)
+        dpg.split_frame()
+        dpg.bind_item_theme(self.window_name, orange_theme)
+        dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
+        dpg.focus_item(self.window_name)
 
     
     def __render_errors(self, errors):
-        self.__clean_modal()
         for idx, error in enumerate(errors):
             with dpg.group(parent=self.window_name, horizontal=True):
                 dpg.add_spacer(width=20) 
@@ -51,7 +53,7 @@ class ErrorModal:
                     
     
     def __close_window(self, sender, app_data, user_data):
-        dpg.configure_item(self.window_name, show=False)
+        dpg.delete_item(self.window_name)
         
     def __clean_modal(self):
         children = dpg.get_item_children(self.window_name, slot=1)
