@@ -76,21 +76,21 @@ class AnalyzeModel:
             ]
         if filedata.get("type") == "new_fin_analyze":
             analyze_type = self.analyze_options.get(filedata.get("type")).get("button")
-            analyze_data = filedata.get("analyze_data")
+            analyze_data = filedata.get("analyze_data").get("data")
             results = filedata.get("results").get("temperatures")
             data.append(["Analyze Type", analyze_type])
             data.append([_("Base Temperature (°C)"), analyze_data.get("base_temperature")])        
             data.append([_("Enviroment Base Temperature (°C)"), analyze_data.get("env_temperature")])        
             data.append([_("End Fin Temperature (°C)"), analyze_data.get("temp_end_fin")])   
-            data.append([_("Radius (m)"), analyze_data.get("dimension").get("radius")])   
-            data.append([_("A (m)"), analyze_data.get("dimension").get("a")])   
-            data.append([_("B (m)"), analyze_data.get("dimension").get("b")])   
+            data.append([_("Radius (m)"), analyze_data.get("dimensions").get("radius")])   
+            data.append([_("A (m)"), analyze_data.get("dimensions").get("a")])   
+            data.append([_("B (m)"), analyze_data.get("dimensions").get("b")])   
             data.append([_("Length (m)"), analyze_data.get("fin_length")])   
             data.append([_("Material"), analyze_data.get("fin_material")])   
             data.append([_("Conduction Coefficient")])   
             data.append([_("Solve Method")]) 
             data.append([])
-            data.append([_("Point (m)"),_("Temperature Distribuition ()"),_("Temperature Distribuition ()"), _("Local Temperature (°C)")])
+            data.append([_("Point (m)"),_("Temperature Distribuition ()"), _("Local Temperature (°C)")])
             for result in results:
                 data.append([result.get("point"), result.get("temp_distribuition"), result.get("local_temp")])  
             

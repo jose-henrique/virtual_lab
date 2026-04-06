@@ -17,11 +17,15 @@ class DataController:
             return
         analyze_data = AnalyzeModel()
         filename = f"{user_inputs.get("location")}/{user_inputs.get("filename")}.csv"
-        analyze_data.generate_data_csv(file, filename)
-    
+        results = analyze_data.generate_data_csv(file, filename)
+        if results == 0:
+            self.__success_image_save()
+        elif results == -1:
+            self.__error_modal([_("Failed to generate CSV file.")])
+
     def __success_image_save(self):
         dpg.configure_item(self.setup_window, show=False)
-        self.sucess_modal.show_message(_("Image Saved"))
+        self.sucess_modal.show_message(_("Data Exported"))
     
     def __error_modal(self, errors):
         self.error_modal.show_errors(errors)  

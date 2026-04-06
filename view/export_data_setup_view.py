@@ -13,7 +13,7 @@ class ExportDataSetupView():
         self.height_window = 250
         self.icons_font = FontManager().get("icons_solid_base")
         self.text_font = FontManager().get("text_roboto_regular_base")
-        self.data_controller = DataController(self)
+        self.data_controller = DataController(self.window_name)
         self.pos_x = 0
         self.pos_y = 0
 
