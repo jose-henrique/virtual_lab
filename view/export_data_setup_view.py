@@ -22,12 +22,12 @@ class ExportDataSetupView():
         if dpg.does_item_exist(self.window_name):
             dpg.configure_item(self.window_name, show=True, pos=[self.pos_x, self.pos_y])
         else:
-            with dpg.window(label=_("EXPORT IMAGE"), modal=True, tag=self.window_name,  no_resize=True,
+            with dpg.window(label=_("EXPORT data"), modal=True, tag=self.window_name,  no_resize=True,
                         no_title_bar=True, width=self.width_window , height=self.height_window, pos=[self.pos_x, self.pos_y]):
                 
                 # --- CUSTOM HEADER ---
                 with dpg.group(horizontal=True):
-                    dpg.add_text(_("\uf6dd EXPORT DATA"), color=(255, 140, 65), tag="header_image_setup")
+                    dpg.add_text(_("\uf6dd EXPORT DATA"), color=(255, 140, 65), tag="header_data_setup")
                     dpg.add_spacer(width=self.width_window-190) # Push 'X' to the right
                     dpg.add_button(label="X", callback=lambda: dpg.configure_item(self.window_name, show=False), 
                                 small=True)
@@ -37,7 +37,7 @@ class ExportDataSetupView():
                 self.__render_options()
                     
                 
-            dpg.bind_item_font("header_image_setup", self.icons_font)
+            dpg.bind_item_font("header_data_setup", self.icons_font)
             dpg.bind_item_font("options", self.text_font)
             dpg.bind_item_font(self.window_name,self.text_font)   
                 
@@ -47,14 +47,14 @@ class ExportDataSetupView():
             dpg.add_text(_("File Location"))
             with dpg.group(horizontal=True):
                 dpg.add_input_text(label="", default_value="", tag="data_location", readonly=True, width=200,enabled=True)
-                dpg.add_button(label="\uf07b", width=75, tag="button_folder", callback=self.__get_folder_location)
+                dpg.add_button(label="\uf07b", width=75, tag="button_folder_data", callback=self.__get_folder_location)
         dpg.add_spacer(height=5)
         with dpg.group(tag="data_name_group"):
-            dpg.add_text(_("Image Name"))
+            dpg.add_text(_("data Name"))
             dpg.add_input_text(label="", default_value="dataset", tag="data_filename", width=self.width_window-20,enabled=True)
             
         dpg.add_spacer(height=3)
-        dpg.bind_item_font("button_folder",self.icons_font)    
+        dpg.bind_item_font("button_folder_data",self.icons_font)    
         self.__bottom_window()
             
 
