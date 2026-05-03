@@ -3,6 +3,7 @@ import uuid
 from model.analyze_model import AnalyzeModel
 from model.analyze_state_model import state_model
 from view.analysis_views.fin_simulation_view import FinSimluationView
+from view.data_results.data_results_view import DataResultsView
 
 class AnalysisController:
     def __init__(self):
@@ -51,3 +52,5 @@ class AnalysisController:
         w, h = size
         if analyze_type == "new_fin_analyze":
             return FinSimluationView(container, w, h, analyze_id)
+        elif analyze_type == "results":
+            return DataResultsView(container, w, h, analyze_id)
