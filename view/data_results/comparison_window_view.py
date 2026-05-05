@@ -5,12 +5,12 @@ from model.utils.location_getter import LocationGetter
 from model.analyze_state_model import state_model
 
 
-class ComparisonWindowView():
-    def __init__(self):
+class ComparisonWindowView:
+    def __init__(self, height):
         #self.analysis_controller = analysis_controller
         self.window_name = "comparison_window"
         self.width_window = 300
-        self.height_window = 250
+        self.height_window = height
         self.icons_font = FontManager().get("icons_solid_base")
         self.text_font = FontManager().get("text_roboto_regular_base")
         #self.data_controller = DataController(self.window_name)
@@ -35,7 +35,7 @@ class ComparisonWindowView():
         else:
             with dpg.child_window(label=_("COMPARISON TOOL"), tag=self.window_name,
             always_use_window_padding=True,
-            height=250,
+            height=self.height_window,
             show=True):
                 
                 # --- CUSTOM HEADER ---
@@ -56,13 +56,13 @@ class ComparisonWindowView():
     def __render_options(self):
         with dpg.group(tag="experiment_a"):
             dpg.add_text(_("EXPERIMENT A"))
-            dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_a")
+            dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_a", width=-1)
         dpg.add_spacer(height=5)
         with dpg.group(tag="experiment_b"):
             dpg.add_text(_("EXPERIMENT B"))
-            dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_b")
+            dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_b", width=-1)
         dpg.add_spacer(height=25)
-        dpg.add_button(label=_("COMPARE"), tag="button_compare", width=-1, callback=self.__define_analyze_options)
+        dpg.add_button(label=_("COMPARE"), tag="button_compare", width=-1, callback=self.define_analyze_options)
         dpg.bind_item_theme("button_compare",self.button_style)    
             
 
@@ -78,7 +78,7 @@ class ComparisonWindowView():
         filename = dpg.get_value("data_filename")
         return {"location": location, "filename": filename}
           
-    def __define_analyze_options(self):
+    def define_analyze_options(self):
         avaiable_analysis = self.state_model.get_avaiable_analyzes()
         options = {}
         if not avaiable_analysis:
@@ -86,7 +86,7 @@ class ComparisonWindowView():
         for k, v in avaiable_analysis.items():
             if v.get("type") == "results":
                 continue
-            options[f"{v.get("type")}_{v.get("analyze_number")}"] = k
+            options[v.get("name")] = k
         
         dpg.configure_item("combo_experiment_a", items=list(options.keys()))
         dpg.configure_item("combo_experiment_b", items=list(options.keys()))

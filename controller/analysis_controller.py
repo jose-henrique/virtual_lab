@@ -28,7 +28,7 @@ class AnalysisController:
         if self.analyze_state_model.get_avaiable_analyzes().get(analyze_id) is None:
             analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
             analyze = self.__create_analyze_view(analyze_type, size, container, analyze_id)
-            self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True, "analyze_number": analyze_number})
+            self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True, "analyze_number": analyze_number, "name": self.__define_analyze_name(analyze_type, analyze_number)})
             self.analyze_state_model.set_active_analyze(analyze_id)
         else:
             self.analyze_state_model.set_active_analyze(analyze_id)
@@ -54,3 +54,10 @@ class AnalysisController:
             return FinSimluationView(container, w, h, analyze_id)
         elif analyze_type == "results":
             return DataResultsView(container, w, h, analyze_id)
+        
+    def __define_analyze_name(self, analyze_type, analyze_number):
+        analyze_model = self.analyze_model.get_analyze_options().get(analyze_type)
+        if analyze_model is None:
+            return f"{analyze_type} {analyze_number}"
+        
+        return f"{analyze_model.get('tag')} {analyze_number}"
