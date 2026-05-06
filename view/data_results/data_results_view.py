@@ -12,8 +12,8 @@ class DataResultsView:
         self.height = height
         self.height_main_view = height - 500
         self.container_name = f"data_results_container_{uuid.uuid4()}"
-        self.comparisonn_window = ComparisonWindowView(self.height_main_view)
         self.data_chart_view = DataChartView(self.height_main_view)
+        self.comparisonn_window = ComparisonWindowView(self.height_main_view, self.data_chart_view)
         w, h = dpg.get_item_rect_size(self.parent)
         self.row_name = f"main_row_fin_{uuid.uuid4()}"
         self.scond_row = f"table_row_fin_{uuid.uuid4()}"

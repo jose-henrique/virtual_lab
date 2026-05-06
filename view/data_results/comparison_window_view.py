@@ -1,21 +1,20 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
+from controller.charts_controller import ChartsController
 from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
 from model.analyze_state_model import state_model
 
 
 class ComparisonWindowView:
-    def __init__(self, height):
-        #self.analysis_controller = analysis_controller
+    def __init__(self, height, chart_view):
         self.window_name = "comparison_window"
         self.width_window = 300
         self.height_window = height
         self.icons_font = FontManager().get("icons_solid_base")
         self.text_font = FontManager().get("text_roboto_regular_base")
-        #self.data_controller = DataController(self.window_name)
-        #self.pos_x = 0
-        #self.pos_y = 0
+        self.chart_view = chart_view
+        self.charts_controller = ChartsController(chart_view)
         self.state_model = state_model
         self.options_combo = {_("empty"): None}
         
@@ -38,7 +37,6 @@ class ComparisonWindowView:
             height=self.height_window,
             show=True):
                 
-                # --- CUSTOM HEADER ---
                 with dpg.group(horizontal=True):
                     dpg.add_text(_("\uf0ec COMPARISON TOOL"), color=(255, 209, 102), tag="header_comparison")
                     dpg.add_spacer(width=self.width_window-190)
@@ -48,9 +46,7 @@ class ComparisonWindowView:
                 self.__render_options()
                     
                 
-            dpg.bind_item_font("header_comparison", self.icons_font)
-            #dpg.bind_item_font("options", self.text_font)
-            #dpg.bind_item_font(self.window_name,self.text_font)   
+            dpg.bind_item_font("header_comparison", self.icons_font) 
                 
     
     def __render_options(self):
@@ -62,11 +58,11 @@ class ComparisonWindowView:
             dpg.add_text(_("EXPERIMENT B"))
             dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_b", width=-1)
         dpg.add_spacer(height=25)
-        dpg.add_button(label=_("COMPARE"), tag="button_compare", width=-1, callback=self.define_analyze_options)
+        dpg.add_button(label=_("COMPARE"), tag="button_compare", width=-1, callback=self.__compare_experiments)
         dpg.bind_item_theme("button_compare",self.button_style)    
             
-
-            
+    def __compare_experiments(self):
+           self.charts_controller.generate_data_chart(None, None)
     
     def __get_folder_location(self):
         location = LocationGetter().get_location()
@@ -87,6 +83,8 @@ class ComparisonWindowView:
             if v.get("type") == "results":
                 continue
             options[v.get("name")] = k
+
+        self.options_combo = options
         
         dpg.configure_item("combo_experiment_a", items=list(options.keys()))
         dpg.configure_item("combo_experiment_b", items=list(options.keys()))

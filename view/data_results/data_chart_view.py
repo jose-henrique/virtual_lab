@@ -1,5 +1,6 @@
 import dearpygui.dearpygui as dpg
 from gettext import gettext as _
+import uuid
 
 
 class DataChartView:
@@ -7,6 +8,8 @@ class DataChartView:
         self.window_name = "data_chart_view"
         self.width_window = 300
         self.height_window = height
+        self.series_a = "series_a_" + str(uuid.uuid4())
+        self.series_b = "series_b_" + str(uuid.uuid4())
 
     def base_window(self):
         if dpg.does_item_exist(self.window_name):
@@ -27,6 +30,12 @@ class DataChartView:
                     y2 = [0, 1, 8, 27, 64]
 
                     # Série de linha
-                    dpg.add_line_series(x, y, label="y = x²", parent=y_axis)
-                    dpg.add_line_series(x, y2, label="y = x³", parent=y_axis)
+                    dpg.add_line_series(x, y, label="y = x²", parent=y_axis, tag=self.series_a)
+                    dpg.add_line_series(x, y2, label="y = x³", parent=y_axis, tag=self.series_b)
+
+    def update_chart(self, data_set_a, data_set_b):
+        if dpg.does_item_exist(self.window_name):
+            pass
+            # Atualiza os dados da série de linha
+            #dpg.set_value(label, (x, y))
 

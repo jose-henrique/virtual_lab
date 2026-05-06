@@ -5,7 +5,9 @@ from model.analyze_state_model import state_model
 import os
 import csv
 
-class AnalyzeModel:
+from model.data_validation import DataValidation
+
+class AnalyzeModel(DataValidation):
     def __init__(self):
         self.analyze_options = {
             "new_fin_analyze": {
@@ -58,6 +60,24 @@ class AnalyzeModel:
             temp_file.seek(0)
             analyze_state_model.avaiable_analyzes[analyze_id]["file_path"] = temp_file.name
             print(f"Analyze data saved to {temp_file.name}")
+
+
+    def generate_chart_data(self, analyze_a_id, analyze_b_id):
+        analyze_state_model = state_model
+        analyze_a_data = None
+        analyze_b_data = None
+
+        file_a = analyze_state_model.avaiable_analyzes[analyze_a_id].get("file_path")
+        if file_a:
+            analyze_a_data = self.__load_data(file_a)
+
+        
+        file_b = analyze_state_model.avaiable_analyzes[analyze_b_id].get("file_path")
+        if file_b:
+            analyze_b_data = self.__load_data(file_b)
+
+        print(analyze_a_data)
+        print(analyze_b_data)
 
     
     def __remove_previous_file(self, analyze_id):
