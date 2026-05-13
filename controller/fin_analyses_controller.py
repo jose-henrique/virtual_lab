@@ -10,10 +10,10 @@ class FinAnalysesController:
     def solve_analyses(self, params, analyze_id):
         solver = FinSolver(params["fin_geometry"], params["solver_method"])
         data = self.__clean_data(params["data"])
-        temp_array = solver.find_local_temperature(solver.find_temp_distribuition(data), data.get("env_temperature"), data.get("base_temperature"))
-        
-        
         temp_distribuition = solver.find_temp_distribuition(data)
+        temp_array = solver.find_local_temperature(temp_distribuition, data.get("env_temperature"), data.get("base_temperature"))
+        
+        
         if temp_distribuition:
             self.__save_results({"data": data, "fin_geometry": params["fin_geometry"], "solver_method": params["solver_method"]}, {"temperatures": temp_array, "temp_distribuition": temp_distribuition}, analyze_id)
             return {'temperatures': temp_array, 'base_temperature': 80, 'status': 0}

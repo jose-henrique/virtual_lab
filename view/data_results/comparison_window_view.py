@@ -62,8 +62,10 @@ class ComparisonWindowView:
         dpg.bind_item_theme("button_compare",self.button_style)    
             
     def __compare_experiments(self):
-           self.charts_controller.generate_data_chart(None, None)
-    
+           value_a = dpg.get_value("combo_experiment_a")
+           value_b = dpg.get_value("combo_experiment_b")
+           self.charts_controller.generate_data_chart(self.options_combo.get(value_a), self.options_combo.get(value_b))
+
     def __get_folder_location(self):
         location = LocationGetter().get_location()
         dpg.set_value("data_location", location)

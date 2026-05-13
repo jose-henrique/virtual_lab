@@ -26,6 +26,7 @@ class AnalyzeModel(DataValidation):
                 "tag": "convection"
                 }
         }
+        self.errors = []
 
     def get_analyze_options(self):
         return self.analyze_options
@@ -68,18 +69,28 @@ class AnalyzeModel(DataValidation):
         analyze_b_data = None
 
         file_a = analyze_state_model.avaiable_analyzes[analyze_a_id].get("file_path")
-        if file_a:
-            analyze_a_data = self.__load_data(file_a)
-
-        
         file_b = analyze_state_model.avaiable_analyzes[analyze_b_id].get("file_path")
-        if file_b:
-            analyze_b_data = self.__load_data(file_b)
+   
+        self.validates("Data a", file_a, validation="presence", message=_("Experiment A data not found."))
+        self.validates("Data b", file_b, validation="presence", message=_("Experiment B data not found."))
 
-        print(analyze_a_data)
-        print(analyze_b_data)
+        if len(self.errors) > 0:
+            return False
 
-    
+        analyze_a_data = self.__load_data(file_a)
+        analyze_b_data = self.__load_data(file_b)
+        
+        dataset_a_x = [item['point']*1000 for item in analyze_a_data.get("results").get("temperatures")]
+        dataset_a_y = [item['local_temp'] for item in analyze_a_data.get("results").get("temperatures")]
+
+        dataset_b_x = [item['point']*1000 for item in analyze_b_data.get("results").get("temperatures")]
+        dataset_b_y = [item['local_temp'] for item in analyze_b_data.get("results").get("temperatures")]
+
+        return {
+            "experiment_a": [dataset_a_x, dataset_a_y],
+            "experiment_b": [dataset_b_x, dataset_b_y]
+        }
+
     def __remove_previous_file(self, analyze_id):
         analyze_state_model = state_model
         previous_file_path = analyze_state_model.avaiable_analyzes[analyze_id].get("file_path")

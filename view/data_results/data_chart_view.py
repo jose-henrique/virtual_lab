@@ -33,9 +33,8 @@ class DataChartView:
                     dpg.add_line_series(x, y, label="y = x²", parent=y_axis, tag=self.series_a)
                     dpg.add_line_series(x, y2, label="y = x³", parent=y_axis, tag=self.series_b)
 
-    def update_chart(self, data_set_a, data_set_b):
+    def update_chart(self, dataset_a, dataset_b):
         if dpg.does_item_exist(self.window_name):
-            pass
-            # Atualiza os dados da série de linha
-            #dpg.set_value(label, (x, y))
+            dpg.set_value(self.series_a, dataset_a)
+            dpg.set_value(self.series_b, dataset_b)
 
