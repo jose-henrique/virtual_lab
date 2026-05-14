@@ -21,8 +21,8 @@ class DataChartView:
             show=True):
                 with dpg.plot(label="Meu Gráfico", width=-1, height=-1):
                     # Eixos
-                    dpg.add_plot_axis(dpg.mvXAxis, label="Eixo X")
-                    y_axis = dpg.add_plot_axis(dpg.mvYAxis, label="Eixo Y")
+                    dpg.add_plot_axis(dpg.mvXAxis, label=_("Length (mm)"), tag="x_axis")
+                    y_axis = dpg.add_plot_axis(dpg.mvYAxis, label=_("Temperature (°C)"), tag="y_axis")
 
                     # Dados
                     x = [0, 1, 2, 3, 4]
@@ -32,9 +32,14 @@ class DataChartView:
                     # Série de linha
                     dpg.add_line_series(x, y, label="y = x²", parent=y_axis, tag=self.series_a)
                     dpg.add_line_series(x, y2, label="y = x³", parent=y_axis, tag=self.series_b)
+                    dpg.add_plot_legend()
 
     def update_chart(self, dataset_a, dataset_b):
         if dpg.does_item_exist(self.window_name):
             dpg.set_value(self.series_a, dataset_a)
             dpg.set_value(self.series_b, dataset_b)
+            dpg.configure_item(self.series_a, label=_("Experiment A"))
+            dpg.configure_item(self.series_b, label=_("Experiment B"))
+            dpg.fit_axis_data("y_axis")
+            dpg.fit_axis_data("x_axis")
 
