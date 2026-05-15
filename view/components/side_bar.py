@@ -57,6 +57,14 @@ class SideBar:
         dpg.add_spacer(height=space, parent=self.tabs_group)
         button = dpg.add_button(label=label, tag=tag, width=-1, parent=self.tabs_group, callback=self.__select_tab, user_data=analysis_type)
         dpg.bind_item_font(button, self.icons)
+        with dpg.popup(button, mousebutton=dpg.mvMouseButton_Right, modal=False):
+            dpg.add_menu_item(label=_("Duplicate Analysis"), callback=self.__menu_callback, user_data={"action": "clone", "analyze_id": tag})
+            dpg.add_separator()
+            dpg.add_menu_item(label=_("Close Menu"))
+
+    def __menu_callback(self, sender, app_data, user_data):
+        if user_data.get("action") == "clone":
+            self.analysis_controller.clone_analyze(user_data.get("analyze_id"), self)
 
     def __select_tab(self, sender, app_data, user_data):
         children = dpg.get_item_children(self.tabs_group, slot=1)

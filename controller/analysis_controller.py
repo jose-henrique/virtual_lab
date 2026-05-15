@@ -4,6 +4,7 @@ from model.analyze_model import AnalyzeModel
 from model.analyze_state_model import state_model
 from view.analysis_views.fin_simulation_view import FinSimluationView
 from view.data_results.data_results_view import DataResultsView
+import copy
 
 class AnalysisController:
     def __init__(self):
@@ -24,11 +25,24 @@ class AnalysisController:
         analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
         sidebar.add_analyze(f"{analyze.get('label')} {analyze_number}", f"{analyze.get('tag')}_{uuid.uuid4()}", analyze_type)
 
+    def clone_analyze(self, analyze_id, sidebar):
+        analyze_source = self.analyze_state_model.get_analyze(analyze_id)
+        if analyze_source is not None:
+            analyze_type = analyze_source.get("type")
+            analyze = self.analyze_model.get_analyze_options().get(analyze_type)
+            analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
+            new_analyze_id = f"{analyze_type}_{uuid.uuid4()}"
+            sidebar.add_analyze(f"{analyze.get('label')} {analyze_number}", f"{analyze.get('tag')}_{uuid.uuid4()}", analyze_type)
+            new_view = copy.deepcopy(analyze_source.get("view"))
+            self.analyze_state_model.add_analyze(new_analyze_id, {"type": analyze_type, "view": new_view, "active": False, "analyze_number": analyze_number, "name": self.__define_analyze_name(analyze_type, analyze_number)})
+            self.__update_screen()
+
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
         if self.analyze_state_model.get_avaiable_analyzes().get(analyze_id) is None:
             analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
             analyze = self.__create_analyze_view(analyze_type, size, container, analyze_id)
             self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True, "analyze_number": analyze_number, "name": self.__define_analyze_name(analyze_type, analyze_number)})
+            print(self.analyze_state_model.get_avaiable_analyzes())
             self.analyze_state_model.set_active_analyze(analyze_id)
         else:
             self.analyze_state_model.set_active_analyze(analyze_id)
