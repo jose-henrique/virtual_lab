@@ -50,7 +50,7 @@ class AnalysisController:
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
         analyze_data = self.analyze_state_model.get_avaiable_analyzes().get(analyze_id)
         if analyze_data is None or analyze_data.get("view") is None:
-            analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
+            analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1 if analyze_data is None else analyze_data.get("analyze_number")
             analyze_view = self.__create_analyze_view(analyze_type, size, container, analyze_id)
             
             if analyze_data and ("cloned_data" in analyze_data) and analyze_data["cloned_data"]:
