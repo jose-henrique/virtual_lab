@@ -18,6 +18,8 @@ class FinAccordionView(ExperimentsOptionsMasterView):
         self.canva = canva
         self.loadedFont = FontManager().get("text_roboto_base")
         
+        self.tracked_fields = []
+        
     def process_results(self):
         super
         controller = FinAnalysesController()
@@ -40,25 +42,44 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             show=False,
             parent=self.parent):
                 with dpg.collapsing_header(label=_("Geometry"), default_open=True):
-                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=f"geometry_type_{self.unique_id}", callback=self.__change_geometry)
-                    self.radius = self.input_components.input_float(f"radius_{self.unique_id}", "mm", 0.5, "Radius", 0, 1000, callback=self.__update_fin_radius,show=False)
+                    dpg.add_combo([_("Circle"), _("Rectangle")], default_value=_("Select Geometry"), tag=self.__register_field("geometry_type"), callback=self.__change_geometry)
+                    self.radius = self.input_components.input_float(self.__register_field("radius"), "mm", 0.5, "Radius", 0, 1000, callback=self.__update_fin_radius,show=False)
                     with dpg.group(tag=f"square_group_{self.unique_id}", show=False):
-                        self.input_components.input_float(f"a_length_{self.unique_id}", "mm", 0.5, "A Length", 0, 1000)
-                        self.input_components.input_float(f"b_length_{self.unique_id}", "mm", 0.5, "B Length", 0, 1000)
-                    self.input_components.input_float(f"length_{self.unique_id}", "mm", 0.5, _("Length"), 0, 1000, callback=self.__update_fin_length)
+                        self.input_components.input_float(self.__register_field("a_length"), "mm", 0.5, "A Length", 0, 1000)
+                        self.input_components.input_float(self.__register_field("b_length"), "mm", 0.5, "B Length", 0, 1000)
+                    self.input_components.input_float(self.__register_field("length"), "mm", 0.5, _("Length"), 0, 1000, callback=self.__update_fin_length)
                 with dpg.collapsing_header(label=_("Physical Properties"), default_open=True):
                     properties = PropertiesGetter()
-                    dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag=f"material_{self.unique_id}")
-                    self.input_components.input_float(f"base_temperature_{self.unique_id}", "°C", 0.5, _("Base Temperature"), 0, 1000, callback=self.__update_base_temp)
-                    self.input_components.input_float(f"end_temp_fin_{self.unique_id}", "°C", 0.5, _("Temp at the of the fin"), 0, 1000)
+                    dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag=self.__register_field("material"))
+                    self.input_components.input_float(self.__register_field("base_temperature"), "°C", 0.5, _("Base Temperature"), 0, 1000, callback=self.__update_base_temp)
+                    self.input_components.input_float(self.__register_field("end_temp_fin"), "°C", 0.5, _("Temp at the of the fin"), 0, 1000)
                 with dpg.collapsing_header(label=_("Enviroment"), default_open=True):
-                    self.input_components.input_float(f"convection_coefficient_{self.unique_id}", "KW/m².K", 0.5, _("Convection Coefficient"), 0, 1000)
-                    self.input_components.input_float(f"env_temperature_{self.unique_id}", "°C", 0.5, _("Env. Temp."), 0, 1000)
+                    self.input_components.input_float(self.__register_field("convection_coefficient"), "KW/m².K", 0.5, _("Convection Coefficient"), 0, 1000)
+                    self.input_components.input_float(self.__register_field("env_temperature"), "°C", 0.5, _("Env. Temp."), 0, 1000)
                 with dpg.collapsing_header(label=_("Run Simulation"), default_open=True):
-                    self.input_components.input_int(f"nodes_{self.unique_id}", "N", 1, _("Nodes"), 0, 1000)
-                    dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag=f"solve_method_{self.unique_id}")
+                    self.input_components.input_int(self.__register_field("nodes"), "N", 1, _("Nodes"), 0, 1000)
+                    dpg.add_combo([_("Infinity Fin"), _("Adiabatic Fin"), _("Specified Temp"), _("Specified Convetion")], default_value=_("Select Method"), tag=self.__register_field("solve_method"))
         dpg.bind_item_font(self.view_name, self.loadedFont)
 
+    def get_raw_values(self):
+        
+        return {field: dpg.get_value(f"{field}_{self.unique_id}") for field in self.tracked_fields}
+        
+    def set_raw_values(self, data):
+        if not data:
+            return
+        
+        for key, value in data.items():
+            tag = f"{key}_{self.unique_id}"
+            if dpg.does_item_exist(tag):
+                dpg.set_value(tag, value)
+                
+        self.__change_geometry(None, data.get("geometry_tyoe"))
+        self.canva.set_base_temp(data.get("base_temperature", 0))
+        self.canva.set_fin_length(data.get("length", 0))
+        if data.get("geometry_type") == "Circle":
+            self.canva.set_fin_height(data.get("radius", 0) * 2)
+        
     def __capture_values(self):
         data = {
                 "fin_geometry": self.__convert_geometry_type(dpg.get_value(f"geometry_type_{self.unique_id}")),
@@ -110,3 +131,9 @@ class FinAccordionView(ExperimentsOptionsMasterView):
     
     def __update_fin_radius(self, tag, new_value, user_data):
         self.canva.set_fin_height(new_value * 2)
+    
+    def __register_field(self, base_name):
+        if base_name not in self.tracked_fields:
+            self.tracked_fields.append(base_name)
+            
+        return f"{base_name}_{self.unique_id}"

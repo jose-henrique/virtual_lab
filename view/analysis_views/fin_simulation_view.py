@@ -39,6 +39,13 @@ class FinSimluationView:
 
     def get_canva(self):
         return self.canvas
+    
+    def get_form_data(self):
+        return self.fin_accordion_view.get_raw_values()
+    
+    
+    def set_form_data(self, data):
+        self.fin_accordion_view.set_raw_values(data)
             
             
 

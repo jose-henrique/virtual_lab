@@ -32,16 +32,36 @@ class AnalysisController:
             analyze = self.analyze_model.get_analyze_options().get(analyze_type)
             analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
             new_analyze_id = f"{analyze.get("tag")}_{uuid.uuid4()}"
+            
             sidebar.add_analyze(f"{analyze.get('label')} {analyze_number}", f"{new_analyze_id}", analyze_type)
-            new_view = copy.deepcopy(analyze_source.get("view"))
-            self.analyze_state_model.add_analyze(new_analyze_id, {"type": analyze_type, "view": new_view, "active": False, "analyze_number": analyze_number, "name": self.__define_analyze_name(analyze_type, analyze_number)})
-            #self.__update_screen()
+            
+            source_view = analyze_source.get("view")
+            captured_data = source_view.get_form_data() if hasattr(source_view, "get_form_data")  else None
+            
+            self.analyze_state_model.add_analyze(new_analyze_id, 
+                                                 {"type": analyze_type, 
+                                                  "view": None, 
+                                                  "cloned_data": captured_data,
+                                                  "active": False, 
+                                                  "analyze_number": analyze_number, 
+                                                  "name": self.__define_analyze_name(analyze_type, analyze_number)})
+            
 
     def change_active_analyze(self, analyze_id, analyze_type, size, container):
-        if self.analyze_state_model.get_avaiable_analyzes().get(analyze_id) is None:
+        analyze_data = self.analyze_state_model.get_avaiable_analyzes().get(analyze_id)
+        if analyze_data is None or analyze_data.get("view") is None:
             analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1
-            analyze = self.__create_analyze_view(analyze_type, size, container, analyze_id)
-            self.analyze_state_model.add_analyze(analyze_id, {"type": analyze_type, "view": analyze, "active": True, "analyze_number": analyze_number, "name": self.__define_analyze_name(analyze_type, analyze_number)})
+            analyze_view = self.__create_analyze_view(analyze_type, size, container, analyze_id)
+            
+            if analyze_data and ("cloned_data" in analyze_data) and analyze_data["cloned_data"]:
+                analyze_view.set_form_data(analyze_data["cloned_data"])
+            
+            self.analyze_state_model.add_analyze(analyze_id, 
+                                                 {"type": analyze_type, 
+                                                  "view": analyze_view, 
+                                                  "active": True, 
+                                                  "analyze_number": analyze_number, 
+                                                  "name": self.__define_analyze_name(analyze_type, analyze_number)})
             self.analyze_state_model.set_active_analyze(analyze_id)
         else:
             self.analyze_state_model.set_active_analyze(analyze_id)
