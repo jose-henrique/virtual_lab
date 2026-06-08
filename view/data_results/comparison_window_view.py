@@ -4,6 +4,7 @@ from controller.charts_controller import ChartsController
 from model.utils.font_manager import FontManager
 from model.utils.location_getter import LocationGetter
 from model.analyze_state_model import state_model
+from controller.data_results_controller import DataResultsController
 
 
 class ComparisonWindowView:
@@ -15,6 +16,7 @@ class ComparisonWindowView:
         self.text_font = FontManager().get("text_roboto_regular_base")
         self.chart_view = chart_view
         self.charts_controller = ChartsController(chart_view)
+        self.data_result_controller = DataResultsController(self)
         self.state_model = state_model
         self.options_combo = {_("empty"): None}
         
@@ -76,18 +78,12 @@ class ComparisonWindowView:
         filename = dpg.get_value("data_filename")
         return {"location": location, "filename": filename}
           
-    def define_analyze_options(self):
-        avaiable_analysis = self.state_model.get_avaiable_analyzes()
-        options = {}
-        if not avaiable_analysis:
-            return []
-        for k, v in avaiable_analysis.items():
-            if v.get("type") == "results":
-                continue
-            options[v.get("name")] = k
-
-        self.options_combo = options
+    def define_analyze_options(self, filter=None):
+        self.options_combo = self.data_result_controller.define_aviable_options(filter)
         
-        dpg.configure_item("combo_experiment_a", items=list(options.keys()))
-        dpg.configure_item("combo_experiment_b", items=list(options.keys()))
+        dpg.configure_item("combo_experiment_a", items=list(self.options_combo.keys()))
+        dpg.configure_item("combo_experiment_b", items=list(self.options_combo.keys()))
+        
+    def filter_analyses(self, analyze_type):
+        self.define_analyze_options(analyze_type)
             

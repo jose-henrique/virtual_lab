@@ -12,17 +12,20 @@ class AnalyzeModel(DataValidation):
         self.analyze_options = {
             "new_fin_analyze": {
                 "label": _("\uf2c8 FIN"), 
-                "button": _("FIN ANALYZE"), 
+                "button": _("FIN ANALYZE"),
+                "name": _("Fins"), 
                 "tag": "fin"
-                }, 
+                },
             "new_conduction_analyze": {
                 "label": _("\uf029 CONDUCTION"), 
                 "button": _("CONDUCTION ANALYZE"), 
+                "name": _("Conduction"),
                 "tag": "conduction"
                 },
             "new_convection_analyze": {
                 "label": _("\uf773 CONVECTION"), 
                 "button": _("CONVECTION ANALYZE"), 
+                "name": _("Convection"),
                 "tag": "convection"
                 }
         }

@@ -87,7 +87,7 @@ class AnalysisController:
         if analyze_type == "new_fin_analyze":
             return FinSimluationView(container, w, h, analyze_id)
         elif analyze_type == "results":
-            return DataResultsView(container, w, h, analyze_id)
+            return DataResultsView(container, w, h, analyze_id, self.analyze_model.analyze_options)
         
     def __define_analyze_name(self, analyze_type, analyze_number):
         analyze_model = self.analyze_model.get_analyze_options().get(analyze_type)
