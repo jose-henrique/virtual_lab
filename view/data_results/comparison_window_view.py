@@ -8,13 +8,14 @@ from controller.data_results_controller import DataResultsController
 
 
 class ComparisonWindowView:
-    def __init__(self, height, chart_view):
+    def __init__(self, height, chart_view, compare_info_view):
         self.window_name = "comparison_window"
         self.width_window = 300
         self.height_window = height
         self.icons_font = FontManager().get("icons_solid_base")
         self.text_font = FontManager().get("text_roboto_regular_base")
         self.chart_view = chart_view
+        self.compare_info_view = compare_info_view
         self.charts_controller = ChartsController(chart_view)
         self.data_result_controller = DataResultsController(self)
         self.state_model = state_model
@@ -67,6 +68,7 @@ class ComparisonWindowView:
            value_a = dpg.get_value("combo_experiment_a")
            value_b = dpg.get_value("combo_experiment_b")
            self.charts_controller.generate_data_chart(self.options_combo.get(value_a), self.options_combo.get(value_b))
+           self.data_result_controller.get_analyze_data(self.options_combo.get(value_a), self.options_combo.get(value_b), self.compare_info_view)
 
     def __get_folder_location(self):
         location = LocationGetter().get_location()

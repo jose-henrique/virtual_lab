@@ -34,7 +34,18 @@ class AnalyzeModel(DataValidation):
     def get_analyze_options(self):
         return self.analyze_options
     
+    def get_data_set(self, analyze_id):
+        analyze_state_model = state_model
+        file = analyze_state_model.avaiable_analyzes[analyze_id].get("file_path")
+   
+        self.validates("Data", file, validation="presence", message=_("Experiment data not found."))
 
+        if len(self.errors) > 0:
+            return False
+
+        return self.__load_data(file)
+    
+    
     def generate_data_csv(self, file, filename):
         try:
             saved_data = self.__load_data(file)

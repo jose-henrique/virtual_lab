@@ -4,6 +4,7 @@ import uuid
 from view.data_results.comparison_window_view import ComparisonWindowView
 from view.data_results.data_chart_view import DataChartView
 from model.utils.font_manager import FontManager
+from view.data_results.dataset_view import DatasetView
 
 class DataResultsView:
 
@@ -14,13 +15,14 @@ class DataResultsView:
         self.height_main_view = height - 500
         self.analyze_options = self.__define_options(analyze_options)
         self.container_name = f"data_results_container_{uuid.uuid4()}"
+        self.row_name = f"main_row_fin_{uuid.uuid4()}"
+        self.scond_row = f"table_row_fin_{uuid.uuid4()}"
+        self.dataset_view = DatasetView(width, height, self.scond_row )
         self.data_chart_view = DataChartView(self.height_main_view)
-        self.comparisonn_window = ComparisonWindowView(self.height_main_view, self.data_chart_view)
+        self.comparisonn_window = ComparisonWindowView(self.height_main_view, self.data_chart_view, self.dataset_view)
         self.icons_font = FontManager().get("icons_solid_small")
         self.text_font = FontManager().get("text_roboto_regular_medium")
         w, h = dpg.get_item_rect_size(self.parent)
-        self.row_name = f"main_row_fin_{uuid.uuid4()}"
-        self.scond_row = f"table_row_fin_{uuid.uuid4()}"
         self.__render_simulation()
     
 
@@ -34,15 +36,15 @@ class DataResultsView:
                     self.comparisonn_window.base_window()
                     self.data_chart_view.base_window()
                 with dpg.table_row(tag=self.scond_row, parent=self.table_id):
-                    dpg.add_text("some_text")
+                    pass#self.dataset_view.display_analyze_data([], [])
                 
     def __header_view(self):
         dpg.add_text(_("ANALYSIS RESULTS"), parent=self.container_name, tag="header_title_results")
         with dpg.group(horizontal=True, parent=self.container_name, tag="results_options"):
             dpg.add_text(_("COMPARATIVE THERMAL MODELING"))
             dpg.add_combo(list(self.analyze_options.keys()), default_value=_("Filter by Analyze"), tag="filter", width=150, callback=self.__filter_analyses)
-            dpg.add_button(label=_("\uf04b CLEAR ALL"), tag="button_clear_results", width=120)
-            dpg.add_button(label=_("\uf04b SAVE REPORT"), tag="button_save_results", width=120)
+            dpg.add_button(label=_("\uf2ed CLEAR ALL"), tag="button_clear_results", width=120)
+            dpg.add_button(label=_("\uf0c7 SAVE REPORT"), tag="button_save_results", width=120)
         
         
         dpg.bind_item_font("header_title_results", self.text_font)
