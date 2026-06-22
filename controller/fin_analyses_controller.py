@@ -10,13 +10,22 @@ class FinAnalysesController:
     def solve_analyses(self, params, analyze_id):
         solver = FinSolver(params["fin_geometry"], params["solver_method"])
         data = self.__clean_data(params["data"])
-        temp_distribuition = solver.find_temp_distribuition(data)
-        temp_array = solver.find_local_temperature(temp_distribuition, data.get("env_temperature"), data.get("base_temperature"))
+        complete_answers = solver.solve_fin(data)
+        temperatures = solver.find_local_temperature(complete_answers["temp_results"], data.get("env_temperature"), data.get("base_temperature"))
         
         
-        if temp_distribuition:
-            self.__save_results({"data": data, "fin_geometry": params["fin_geometry"], "solver_method": params["solver_method"]}, {"temperatures": temp_array, "temp_distribuition": temp_distribuition}, analyze_id)
-            return {'temperatures': temp_array, 'base_temperature': 80, 'status': 0}
+        if complete_answers:
+            self.__save_results(
+                {"data": data, 
+                 "heat_transfer": complete_answers["heat_transfer"],
+                 "area": complete_answers["area"],
+                 "perimeter": complete_answers["perimeter"],
+                 "fin_efficience": complete_answers["fin_efficience"],
+                 "fin_geometry": params["fin_geometry"], 
+                 "solver_method": params["solver_method"]}, 
+                {"temperatures": temperatures}, 
+                analyze_id)
+            return {'temperatures': temperatures, 'base_temperature': 80, 'status': 0}
         else:
             return {'errors': solver.errors, 'status': -1}
         
