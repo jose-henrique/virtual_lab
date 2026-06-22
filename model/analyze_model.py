@@ -121,6 +121,7 @@ class AnalyzeModel(DataValidation):
             ]
         if filedata.get("type") == "new_fin_analyze":
             analyze_type = self.analyze_options.get(filedata.get("type")).get("button")
+            pre_analyze_data = filedata.get("analyze_data")
             analyze_data = filedata.get("analyze_data").get("data")
             results = filedata.get("results").get("temperatures")
             data.append(["Analyze Type", analyze_type])
@@ -131,13 +132,16 @@ class AnalyzeModel(DataValidation):
             data.append([_("A (m)"), analyze_data.get("dimensions").get("a")])   
             data.append([_("B (m)"), analyze_data.get("dimensions").get("b")])   
             data.append([_("Length (m)"), analyze_data.get("fin_length")])   
-            data.append([_("Material"), analyze_data.get("fin_material")])   
-            data.append([_("Conduction Coefficient")])   
-            data.append([_("Solve Method")]) 
+            data.append([_("Convection Coefficient (kW/m²)"), analyze_data.get("convection_coefficient")])   
+            data.append([_("Material"), analyze_data.get("fin_material")])      
+            data.append([_("Solve Method"), self.__solve_method(pre_analyze_data.get("solver_method"))]) 
+            data.append([_("Heat Transfer (W)"), pre_analyze_data.get("heat_transfer")])    
+            data.append([_("Area (m²)"), pre_analyze_data.get("area")])    
+            data.append([_("Efficience"), pre_analyze_data.get("fin_efficience")])        
             data.append([])
-            data.append([_("Point (m)"),_("Temperature Distribuition ()"), _("Local Temperature (°C)")])
+            data.append([_("Point (m)"),_("Relative Length ()"), _("Temperature Distribuition ()"), _("Local Temperature (°C)")])
             for result in results:
-                data.append([result.get("point"), result.get("temp_distribuition"), result.get("local_temp")])  
+                data.append([result.get("point"), result.get("relative_length"), result.get("temp_distribuition"), result.get("local_temp")])  
             
             return data     
 
@@ -151,3 +155,15 @@ class AnalyzeModel(DataValidation):
         except json.JSONDecodeError:
             print(f"Error: Failed to decode JSON from {file}.")
         return None
+    
+    
+    def __solve_method(self, code):
+        if code == 1:
+            return _("Infinity Fin")
+        elif code == 2:
+            return _("Adiabatic Fin")
+        elif code == 3:
+            return _("Specified Temperature")
+        elif code == 4:
+            return _("Specified Convection")
+            
