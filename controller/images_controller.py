@@ -18,6 +18,7 @@ class ImagesController:
             self.__error_image_save(results["errors"]) 
     
     def __success_image_save(self):
+        print("Vim Aqui")
         dpg.configure_item(self.setup_window, show=False)
         self.sucess_modal.show_message(_("Image Saved"))
     

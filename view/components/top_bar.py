@@ -10,6 +10,7 @@ class TopBar:
     def __init__(self, tag, analysis_controller):
         self.height = 50
         self.analysis_controller = analysis_controller
+        self.image_view = ImageSetupView(self.analysis_controller)
         with dpg.theme() as self.sidebar_bg_theme:
             with dpg.theme_component(dpg.mvChildWindow):
                 dpg.add_theme_color(dpg.mvThemeCol_ChildBg, (0, 0, 0, 255))
@@ -48,8 +49,8 @@ class TopBar:
 
     def __handle_export_image(self):
         if self.analysis_controller.current_analyze() is not None:
-            image_view = ImageSetupView(self.analysis_controller)
-            image_view.base_window()
+            
+            self.image_view.base_window()
         else:
             error_modal = ErrorModal()
             error_modal.show_errors([_("Selecte an Analyze First")])
