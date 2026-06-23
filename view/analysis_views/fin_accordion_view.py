@@ -74,7 +74,7 @@ class FinAccordionView(ExperimentsOptionsMasterView):
             if dpg.does_item_exist(tag):
                 dpg.set_value(tag, value)
                 
-        self.__change_geometry(None, data.get("geometry_tyoe"))
+        self.__change_geometry(None, data.get("geometry_type"))
         self.canva.set_base_temp(data.get("base_temperature", 0))
         self.canva.set_fin_length(data.get("length", 0))
         if data.get("geometry_type") == "Circle":
