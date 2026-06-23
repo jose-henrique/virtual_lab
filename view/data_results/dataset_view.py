@@ -13,7 +13,6 @@ class DatasetView:
         self.parent = parent
         self.text_font = FontManager().get("text_roboto_regular_medium")
     
-    
     def display_analyze_data(self, dataset_a, dataset_b):
         
         if dpg.does_item_exist("dataset_info_a"):
@@ -21,23 +20,23 @@ class DatasetView:
             
         if dpg.does_item_exist("dataset_info_b"):
             dpg.delete_item("dataset_info_b")
-        
-        with dpg.group(tag="dataset_info_a", parent=self.parent):
-            self.__dataset_info(dataset_a, 1)
-            self.__create_dataset(dataset_a, self.width/2,self.height/4)
             
-        with dpg.group(tag="dataset_info_b", parent=self.parent):
-            self.__dataset_info(dataset_b, 2)
-            self.__create_dataset(dataset_b, self.width/2,self.height/4)
+        if dataset_a:
+            with dpg.group(tag="dataset_info_a", parent=self.parent):
+                self.__dataset_info(dataset_a,self.width/2, 1)
+                self.__create_dataset(dataset_a, self.width/2,self.height/4)
+        
+        if dataset_b:
+            with dpg.group(tag="dataset_info_b", parent=self.parent):
+                self.__dataset_info(dataset_b, self.width/2, 2)
+                self.__create_dataset(dataset_b, self.width/2,self.height/4)
                             
-    
-    
-    def __dataset_info(self, dataset, id):
+    def __dataset_info(self, dataset, width, id):
         dataset_analyze_data = dataset.get("analyze_data")
         dataset_data = dataset_analyze_data.get("data")
         with dpg.group(tag=f"group_info_{id}"):
             
-            with dpg.table(header_row=False, resizable=False):
+            with dpg.table(header_row=False, resizable=False, width=width):
                 dpg.add_table_column()
                 dpg.add_table_column()
                 dpg.add_table_column()     
@@ -85,10 +84,6 @@ class DatasetView:
         
         dpg.bind_item_font(f"group_info_{id}", self.text_font)
 
-                            
-                            
-
-    
     def __create_dataset(self, dataset, width, height):
         results = dataset["results"]["temperatures"]
         with dpg.table(header_row=True, borders_innerH=True, borders_outerH=True, scrollY=True, borders_innerV=True, borders_outerV=True, width=width, height=height):
@@ -116,5 +111,8 @@ class DatasetView:
         elif code == 4:
             return _("Specified Convection")
         
-
-
+    def __define_width(self, dataset_a, dataset_b):
+        if dataset_a and dataset_b:
+            return self.width/2
+        else:
+            return self.width

@@ -61,7 +61,7 @@ class ComparisonWindowView:
             dpg.add_text(_("EXPERIMENT B"))
             dpg.add_combo(items=list(self.options_combo.keys()), tag="combo_experiment_b", width=-1)
         dpg.add_spacer(height=25)
-        dpg.add_button(label=_("COMPARE"), tag="button_compare", width=-1, callback=self.__compare_experiments)
+        dpg.add_button(label=_("SHOW RESULTS"), tag="button_compare", width=-1, callback=self.__compare_experiments)
         dpg.bind_item_theme("button_compare",self.button_style)    
             
     def __compare_experiments(self):

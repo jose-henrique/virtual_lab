@@ -81,29 +81,32 @@ class AnalyzeModel(DataValidation):
         analyze_state_model = state_model
         analyze_a_data = None
         analyze_b_data = None
+        results = {}
 
-        file_a = analyze_state_model.avaiable_analyzes[analyze_a_id].get("file_path")
-        file_b = analyze_state_model.avaiable_analyzes[analyze_b_id].get("file_path")
-   
-        self.validates("Data a", file_a, validation="presence", message=_("Experiment A data not found."))
-        self.validates("Data b", file_b, validation="presence", message=_("Experiment B data not found."))
+        if analyze_a_id:
+            file_a = analyze_state_model.avaiable_analyzes[analyze_a_id].get("file_path")
+            self.validates("Data a", file_a, validation="presence", message=_("Experiment A data not found."))
+        
+        if analyze_b_id:
+            file_b = analyze_state_model.avaiable_analyzes[analyze_b_id].get("file_path")
+            self.validates("Data b", file_b, validation="presence", message=_("Experiment B data not found."))
 
         if len(self.errors) > 0:
             return False
 
-        analyze_a_data = self.__load_data(file_a)
-        analyze_b_data = self.__load_data(file_b)
-        
-        dataset_a_x = [item['relative_length'] for item in analyze_a_data.get("results").get("temperatures")]
-        dataset_a_y = [item['local_temp'] for item in analyze_a_data.get("results").get("temperatures")]
+        if analyze_a_id: 
+            analyze_a_data = self.__load_data(file_a)
+            dataset_a_x = [item['relative_length'] for item in analyze_a_data.get("results").get("temperatures")]
+            dataset_a_y = [item['local_temp'] for item in analyze_a_data.get("results").get("temperatures")]
+            results["experiment_a"] = [dataset_a_x, dataset_a_y]
+            
+        if analyze_b_id:
+            analyze_b_data = self.__load_data(file_b)
+            dataset_b_x = [item['relative_length'] for item in analyze_b_data.get("results").get("temperatures")]
+            dataset_b_y = [item['local_temp'] for item in analyze_b_data.get("results").get("temperatures")]
+            results["experiment_b"] = [dataset_b_x, dataset_b_y]
 
-        dataset_b_x = [item['relative_length'] for item in analyze_b_data.get("results").get("temperatures")]
-        dataset_b_y = [item['local_temp'] for item in analyze_b_data.get("results").get("temperatures")]
-
-        return {
-            "experiment_a": [dataset_a_x, dataset_a_y],
-            "experiment_b": [dataset_b_x, dataset_b_y]
-        }
+        return results
 
     def __remove_previous_file(self, analyze_id):
         analyze_state_model = state_model

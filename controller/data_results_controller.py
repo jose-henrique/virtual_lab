@@ -29,10 +29,16 @@ class DataResultsController:
     
     
     def get_analyze_data(self, experiment_a_id, experiment_b_id, compare_info_view):
-        dataset_a =self.analyze_model.get_data_set(experiment_a_id)
-        dataset_b =self.analyze_model.get_data_set(experiment_b_id)
+        dataset_a = None
+        dataset_b = None
+        
+        if experiment_a_id:
+            dataset_a =self.analyze_model.get_data_set(experiment_a_id)
+        
+        if experiment_b_id:
+            dataset_b =self.analyze_model.get_data_set(experiment_b_id)
 
-        if dataset_a and dataset_b:
+        if dataset_a or dataset_b:
             compare_info_view.display_analyze_data(dataset_a, dataset_b)
         else:
             self.__error_modal(self.analyze_model.errors)

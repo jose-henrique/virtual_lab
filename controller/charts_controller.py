@@ -10,8 +10,8 @@ class ChartsController:
         self.analyze_model = AnalyzeModel()
     
     def generate_data_chart(self, experiment_a_id, experiment_b_id):
-        if experiment_b_id is None or experiment_a_id is None:
-            self.__error_modal([_("Please select two experiments to compare.")])
+        if experiment_b_id is None and experiment_a_id is None:
+            self.__error_modal([_("Please select an experiment to plot.")])
             return
         results =self.analyze_model.generate_chart_data(experiment_a_id, experiment_b_id)
 
