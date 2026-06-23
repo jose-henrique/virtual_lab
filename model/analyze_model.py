@@ -94,10 +94,10 @@ class AnalyzeModel(DataValidation):
         analyze_a_data = self.__load_data(file_a)
         analyze_b_data = self.__load_data(file_b)
         
-        dataset_a_x = [item['point']*1000 for item in analyze_a_data.get("results").get("temperatures")]
+        dataset_a_x = [item['relative_length'] for item in analyze_a_data.get("results").get("temperatures")]
         dataset_a_y = [item['local_temp'] for item in analyze_a_data.get("results").get("temperatures")]
 
-        dataset_b_x = [item['point']*1000 for item in analyze_b_data.get("results").get("temperatures")]
+        dataset_b_x = [item['relative_length'] for item in analyze_b_data.get("results").get("temperatures")]
         dataset_b_y = [item['local_temp'] for item in analyze_b_data.get("results").get("temperatures")]
 
         return {

@@ -21,7 +21,7 @@ class DataChartView:
             show=True):
                 with dpg.plot(label="Meu Gráfico", width=-1, height=-1):
                     # Eixos
-                    dpg.add_plot_axis(dpg.mvXAxis, label=_("Length (mm)"), tag="x_axis")
+                    dpg.add_plot_axis(dpg.mvXAxis, label=_("Relative Length ()"), tag="x_axis")
                     y_axis = dpg.add_plot_axis(dpg.mvYAxis, label=_("Temperature (°C)"), tag="y_axis")
 
                     # Dados
