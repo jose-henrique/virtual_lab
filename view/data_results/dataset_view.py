@@ -15,12 +15,6 @@ class DatasetView:
     
     
     def display_analyze_data(self, dataset_a, dataset_b):
-        # dados_usuarios = [
-        #     ("1", "Ana Silva", "Designer", "Ativo"),
-        #     ("2", "Bruno Costa", "Desenvolvedor", "Inativo"),
-        #     ("3", "Carlos Souza", "Gerente de Projetos", "Ativo"),
-        #     ("4", "Daniela Lima", "Analista de QA", "Ativo"),
-        # ]
         
         if dpg.does_item_exist("dataset_info_a"):
             dpg.delete_item("dataset_info_a")
@@ -65,22 +59,29 @@ class DatasetView:
                 with dpg.table_row():
                     with dpg.group():
                         dpg.add_text(_("Method"), wrap=0, color=(190, 91, 16))
-                        dpg.add_text(f"{dataset_analyze_data.get("solver_method")}", color=(124, 246, 236))
+                        dpg.add_text(f"{self.__solve_method(dataset_analyze_data.get("solver_method"))}", color=(124, 246, 236))
                     
                     with dpg.group():
                         dpg.add_text(_("Area"), wrap=0, color=(190, 91, 16))
-                        dpg.add_text("12", color=(124, 246, 236))
+                        dpg.add_text(f"{(dataset_analyze_data.get("area")*1000000):.2f} mm²", color=(124, 246, 236))
                     
                     with dpg.group():
                         dpg.add_text(_("Length"), wrap=0, color=(190, 91, 16))
-                        dpg.add_text(f"{dataset_data.get("fin_length")} m", color=(124, 246, 236))
+                        dpg.add_text(f"{(dataset_data.get("fin_length")*1000):.2f} mm", color=(124, 246, 236))
+                        
+                with dpg.table_row():
+                    with dpg.group():
+                        dpg.add_text(_("Convection Coefficient"), wrap=0, color=(190, 91, 16))
+                        dpg.add_text(f"{dataset_data.get("convection_coefficient")} kW/m².K", color=(124, 246, 236))
+                    
+                    with dpg.group():
+                        dpg.add_text(_("Heat"), wrap=0, color=(190, 91, 16))
+                        dpg.add_text(f"{dataset_analyze_data.get("heat_transfer"):.2f} W", color=(124, 246, 236))
+                    
+                    with dpg.group():
+                        dpg.add_text(_("Efficience"), wrap=0, color=(190, 91, 16))
+                        dpg.add_text(f"{(dataset_analyze_data.get("fin_efficience")*100):.2f} %", color=(124, 246, 236))
             
-            with dpg.table(header_row=False, resizable=False):
-                        dpg.add_table_column()
-                        with dpg.table_row():
-                            with dpg.group():
-                                dpg.add_text(_("Convection Coefficient"), wrap=0, color=(190, 91, 16))
-                                dpg.add_text(f"{dataset_data.get("convection_coefficient")} kW/m².K", color=(124, 246, 236))
         
         dpg.bind_item_font(f"group_info_{id}", self.text_font)
 
@@ -93,16 +94,27 @@ class DatasetView:
         with dpg.table(header_row=True, borders_innerH=True, borders_outerH=True, scrollY=True, borders_innerV=True, borders_outerV=True, width=width, height=height):
                 dpg.add_table_column(label="#")
                 dpg.add_table_column(label=_("Point"))
+                dpg.add_table_column(label=_("Relative Length"))
                 dpg.add_table_column(label=_("Temperature Distribuiton (Theta)"))
                 dpg.add_table_column(label=_("Local Temperature"))
                 
                 for idx, row in enumerate(results):
                     with dpg.table_row():
                         dpg.add_text(idx)
-                        dpg.add_text(row["point"])
-                        dpg.add_text(row["temp_distribuition"])
-                        dpg.add_text(row["local_temp"])
+                        dpg.add_text(f"{row["point"]:.4f}")
+                        dpg.add_text(f"{row["relative_length"]:.4f}")
+                        dpg.add_text(f"{row["temp_distribuition"]:.4f}")
+                        dpg.add_text(f"{row["local_temp"]:.4f}")
         
+    def __solve_method(self, code):
+        if code == 1:
+            return _("Infinity Fin")
+        elif code == 2:
+            return _("Adiabatic Fin")
+        elif code == 3:
+            return _("Specified Temperature")
+        elif code == 4:
+            return _("Specified Convection")
         
 
 
