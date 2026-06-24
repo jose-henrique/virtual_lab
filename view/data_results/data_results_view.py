@@ -36,7 +36,7 @@ class DataResultsView:
                     self.comparisonn_window.base_window()
                     self.data_chart_view.base_window()
                 with dpg.table_row(tag=self.scond_row, parent=self.table_id):
-                    pass#self.dataset_view.display_analyze_data([], [])
+                    pass
                 
     def __header_view(self):
         dpg.add_text(_("ANALYSIS RESULTS"), parent=self.container_name, tag="header_title_results")
