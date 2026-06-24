@@ -88,4 +88,9 @@ class ComparisonWindowView:
         
     def filter_analyses(self, analyze_type):
         self.define_analyze_options(analyze_type)
+    
+    
+    def clear_combos(self):
+        dpg.set_value("combo_experiment_a", "")
+        dpg.set_value("combo_experiment_b", "")
             

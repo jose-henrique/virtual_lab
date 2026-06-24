@@ -116,3 +116,8 @@ class DatasetView:
             return self.width/2
         else:
             return self.width
+    
+    
+    def remove_infos(self):
+        dpg.delete_item("dataset_info_a")
+        dpg.delete_item("dataset_info_b")

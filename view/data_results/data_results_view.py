@@ -43,7 +43,7 @@ class DataResultsView:
         with dpg.group(horizontal=True, parent=self.container_name, tag="results_options"):
             dpg.add_text(_("COMPARATIVE THERMAL MODELING"))
             dpg.add_combo(list(self.analyze_options.keys()), default_value=_("Filter by Analyze"), tag="filter", width=150, callback=self.__filter_analyses)
-            dpg.add_button(label=_("\uf2ed CLEAR ALL"), tag="button_clear_results", width=120)
+            dpg.add_button(label=_("\uf2ed CLEAR ALL"), tag="button_clear_results", width=120, callback=self.__clear_results)
             dpg.add_button(label=_("\uf0c7 SAVE REPORT"), tag="button_save_results", width=120)
         
         
@@ -65,6 +65,12 @@ class DataResultsView:
             items[f"{value.get("name")}"] = option
 
         return items
+    
+    def __clear_results(self, sender, app_data, user_data):
+        self.comparisonn_window.clear_combos()
+        self.dataset_view.remove_infos()
+        self.data_chart_view.remove_series("a")
+        self.data_chart_view.remove_series("b")
     
 
     
