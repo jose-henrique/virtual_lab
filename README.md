@@ -1,52 +1,62 @@
-# Banco de Dados de Materiais para Transferência de Calor
+# 🌡️ Laboratório Virtual de Transferência de Calor
 
-Este repositório contém um arquivo `.yml` com propriedades físicas de materiais metálicos comumente usados em estudos de transferência de calor.  
-Ele pode ser utilizado como base para simulações, cálculos analíticos ou integração em softwares de engenharia.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![GUI](https://img.shields.io/badge/GUI-Dear%20PyGui-orange)](https://github.com/hoffstadt/DearPyGui)
+[![Arquitetura](https://img.shields.io/badge/Arquitetura-MVC-green)](https://pt.wikipedia.org/wiki/MVVM)
+[![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)](#-cronograma-e-proximos-passos)
+[![Licença](https://img.shields.io/badge/Licen%C3%A7a-MIT-brightgreen.svg)](LICENSE)
 
-## 📂 Estrutura do Arquivo
+Uma aplicação desktop educacional desenvolvida em Python para simulação, visualização interativa e análise numérica de fenômenos de **Transferência de Calor**. O projeto visa conectar equações diferenciais aplicadas à engenharia a uma interface intuitiva, permitindo a geração de gráficos térmicos e exportação de dados em tempo real.
 
-O arquivo `materiais_transferencia_calor.yml` segue o seguinte formato:
+> 🚧 **Status do Projeto**: Em desenvolvimento ativo como Trabalho de Conclusão de Curso (TCC) em Engenharia Mecânica. O núcleo de cálculo numérico e a estrutura da interface gráfica já estão implementados.
 
-```yaml
-nome_material:
-    densidade_kg_m3: valor
-    condutividade_termica_W_mK: valor
-    calor_especifico_J_kgK: valor
-    expansao_termica_1_K: valor
-```
+---
 
-### 🔧 Propriedades Incluídas
-- **densidade_kg_m3:** massa por unidade de volume (kg/m³)
-- **condutividade_termica_W_mK:** capacidade de condução de calor (W/m·K)
-- **calor_especifico_J_kgK:** energia para elevar 1 kg do material em 1 K (J/kg·K)
-- **expansao_termica_1_K:** coeficiente de dilatação térmica linear (1/K)
+## 🌟 Destaques Técnicos
 
-## 📑 Materiais Incluídos
-- Aço carbono
-- Alumínio
-- Cobre
-- Latão
-- Ferro fundido
+Este repositório foi construído aplicando **boas práticas de engenharia de software** voltadas à modelagem científica e simulação física:
 
-## 🚀 Como Usar
+- **Arquitetura MVC (Model-View-Controller):** Separação rigorosa entre a física e os métodos numéricos (Model), a interface gráfica do utilizador (View) e a gestão de estados e eventos (Controller).
+- **Interface Gráfica de Alto Desempenho:** Desenvolvida utilizando **Dear PyGui** (wrapper de C++ em modo imediato), garantindo renderização rápida e baixo consumo de memória sem depender de frameworks pesados como Electron.
+- **Motor Científico Extensível:** Modelos matemáticos orientados a objetos (OOP), permitindo a adição simples de novas condições de contorno, geometrias e tipos de materiais.
+- **Pipeline de Exportação de Dados:** Suporte à exportação da matriz de nós e perfis de temperatura em formatos estruturados (CSV) para validação no MATLAB/Excel, além de gráficos em alta resolução (PNG).
 
-1. Baixe o arquivo `materiais_transferencia_calor.yml`
-2. Importe-o no seu código (Python exemplo):
-```python
-import yaml
+---
 
-with open("materiais_transferencia_calor.yml", "r") as file:
-    materiais = yaml.safe_load(file)
+## 📐 Módulos de Simulação
 
-print(materiais["aco_carbono"]["condutividade_termica_W_mK"])
-```
+### 1. Superfícies Estendidas (Aletas) `[Implementado]`
+- Solução para condução e convecção unidimensional (1D) em aletas com 4 condições de contorno clássicas:
+  - Aleta infinitamente longa;
+  - Extremidade adiabática;
+  - Extremidade com temperatura especificada;
+  - Extremidade com convecção.
+- Discretização espacial interativa (geração de nós) com condutividade térmica ($k$) e coeficiente de convecção ($h$) personalizáveis.
+- Mapeamento de gradiente térmico em tempo real utilizando escala de cores (*colormap* `coolwarm`).
 
-## 📌 Observações
-- Os valores são típicos de materiais comerciais e podem variar conforme a liga, tratamento térmico ou pureza.
-- Recomenda-se confirmar os valores em tabelas ou normas (ASTM, ISO) para aplicações críticas.
+### 2. Condução em Parede Plana Composta `[Em Desenvolvimento]`
+- Modelagem de redes de resistência térmica para paredes multicamadas em regime permanente.
 
-## 📅 Última Atualização
-15/09/2025
+### 3. Convecção Forçada Interna `[Planejado]`
+- Visualização de escoamento e troca de calor em tubos com cálculo de taxa de transferência térmica.
 
-## 📜 Licença
-Este projeto é de uso livre sob a licença MIT.
+---
+
+## 🛠️ Tecnologias e Bibliotecas
+
+- **Linguagem:** Python 3.10+
+- **Interface Gráfica:** [Dear PyGui](https://github.com/hoffstadt/DearPyGui)
+- **Análise Numérica e Gráficos:** NumPy, Matplotlib, Pandas
+- **Padrão de Projeto:** Model-View-Controller (MVC) + Programação Orientada a Objetos (POO)
+
+---
+
+## 🏗️ Estrutura do Projeto
+
+```text
+src/
+├── controllers/    # Intermedeia os inputs da interface e os modelos físicos
+├── models/         # Motores de cálculo numérico (ex: FinSolver)
+├── views/          # Componentes visuais e renderização de janelas no Dear PyGui
+├── utils/          # Módulos de validação, formatação e exportação (CSV/PNG)
+└── main.py         # Ponto de entrada da aplicação
