@@ -11,10 +11,10 @@ class FinAnalysesController:
         solver = FinSolver(params["fin_geometry"], params["solver_method"])
         data = self.__clean_data(params["data"])
         complete_answers = solver.solve_fin(data)
-        temperatures = solver.find_local_temperature(complete_answers["temp_results"], data.get("env_temperature"), data.get("base_temperature"))
         
         
         if complete_answers:
+            temperatures = solver.find_local_temperature(complete_answers["temp_results"], data.get("env_temperature"), data.get("base_temperature"))
             self.__save_results(
                 {"data": data, 
                  "heat_transfer": complete_answers["heat_transfer"],
