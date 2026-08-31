@@ -20,6 +20,7 @@ class DataResultsView:
         self.dataset_view = DatasetView(width, height, self.scond_row )
         self.data_chart_view = DataChartView(self.height_main_view)
         self.comparisonn_window = ComparisonWindowView(self.height_main_view, self.data_chart_view, self.dataset_view)
+        self.data_results_controller = self.comparisonn_window.data_result_controller
         self.icons_font = FontManager().get("icons_solid_small")
         self.text_font = FontManager().get("text_roboto_regular_medium")
         w, h = dpg.get_item_rect_size(self.parent)
@@ -44,7 +45,6 @@ class DataResultsView:
             dpg.add_text(_("COMPARATIVE THERMAL MODELING"))
             dpg.add_combo(list(self.analyze_options.keys()), default_value=_("Filter by Analyze"), tag="filter", width=150, callback=self.__filter_analyses)
             dpg.add_button(label=_("\uf2ed CLEAR ALL"), tag="button_clear_results", width=120, callback=self.__clear_results)
-            dpg.add_button(label=_("\uf0c7 SAVE REPORT"), tag="button_save_results", width=120)
         
         
         dpg.bind_item_font("header_title_results", self.text_font)
@@ -69,13 +69,11 @@ class DataResultsView:
     def __clear_results(self, sender, app_data, user_data):
         self.comparisonn_window.clear_combos()
         self.dataset_view.remove_infos()
+        self.data_results_controller.clear_datasets()
         self.data_chart_view.remove_series("a")
         self.data_chart_view.remove_series("b")
     
-
-    
     def __filter_analyses(self, sender, app_data, user_data):
-        
         self.comparisonn_window.filter_analyses(self.analyze_options[app_data])
             
             
