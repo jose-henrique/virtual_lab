@@ -33,10 +33,10 @@ class DataResultsController:
         dataset_b = None
         
         if experiment_a_id:
-            dataset_a =self.analyze_model.get_data_set(experiment_a_id)
+            dataset_a =self.analyze_model.get_dataset(experiment_a_id)
         
         if experiment_b_id:
-            dataset_b =self.analyze_model.get_data_set(experiment_b_id)
+            dataset_b =self.analyze_model.get_dataset(experiment_b_id)
 
         if dataset_a or dataset_b:
             compare_info_view.display_analyze_data(dataset_a, dataset_b)

@@ -34,7 +34,7 @@ class AnalyzeModel(DataValidation):
     def get_analyze_options(self):
         return self.analyze_options
     
-    def get_data_set(self, analyze_id):
+    def get_dataset(self, analyze_id):
         analyze_state_model = state_model
         file = analyze_state_model.avaiable_analyzes[analyze_id].get("file_path")
    
