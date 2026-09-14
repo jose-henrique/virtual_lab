@@ -9,30 +9,7 @@ from model.data_validation import DataValidation
 
 class AnalyzeModel(DataValidation):
     def __init__(self):
-        self.analyze_options = {
-            "new_fin_analyze": {
-                "label": _("\uf2c8 FIN"), 
-                "button": _("FIN ANALYZE"),
-                "name": _("Fins"), 
-                "tag": "fin"
-                },
-            "new_conduction_analyze": {
-                "label": _("\uf029 CONDUCTION"), 
-                "button": _("CONDUCTION ANALYZE"), 
-                "name": _("Conduction"),
-                "tag": "conduction"
-                },
-            "new_convection_analyze": {
-                "label": _("\uf773 CONVECTION"), 
-                "button": _("CONVECTION ANALYZE"), 
-                "name": _("Convection"),
-                "tag": "convection"
-                }
-        }
         self.errors = []
-
-    def get_analyze_options(self):
-        return self.analyze_options
     
     def get_dataset(self, analyze_id):
         analyze_state_model = state_model
@@ -59,6 +36,14 @@ class AnalyzeModel(DataValidation):
             print(f"Failed with error: {e}")
             return -1
     
+    def __generate_content(self, filedata):
+        from model.default_analysis import registry
+        serializer = registry.get(filedata.get("type")).serializer_factory()
+        if serializer:
+            return serializer.serialize(filedata)    
+        else:
+            raise ValueError(f"No serializer found for analyze type: {filedata.get("type")}")   
+    
     def save_analyze(self, analyze_id, analyze, analyze_data, results):
         analyze_state_model = state_model
         self.__remove_previous_file(analyze_id)
@@ -75,36 +60,34 @@ class AnalyzeModel(DataValidation):
             temp_file.seek(0)
             analyze_state_model.avaiable_analyzes[analyze_id]["file_path"] = temp_file.name
             print(f"Analyze data saved to {temp_file.name}")
-
-
+            
     def generate_chart_data(self, analyze_a_id, analyze_b_id):
-        analyze_state_model = state_model
-        analyze_a_data = None
-        analyze_b_data = None
-        results = {}
+        from model.default_analysis import registry
+        experiments = [
+            ("experiment_a", "Data a", analyze_a_id, _("Experiment A data not found.")),
+            ("experiment_b", "Data b", analyze_b_id, _("Experiment B data not found.")),
+        ]
 
-        if analyze_a_id:
-            file_a = analyze_state_model.avaiable_analyzes[analyze_a_id].get("file_path")
-            self.validates("Data a", file_a, validation="presence", message=_("Experiment A data not found."))
-        
-        if analyze_b_id:
-            file_b = analyze_state_model.avaiable_analyzes[analyze_b_id].get("file_path")
-            self.validates("Data b", file_b, validation="presence", message=_("Experiment B data not found."))
+        to_process = []
+        for key, label, analyze_id, error_msg in experiments:
+            if not analyze_id:
+                continue
 
-        if len(self.errors) > 0:
+            file_path = state_model.avaiable_analyzes[analyze_id].get("file_path")
+            self.validates(label, file_path, validation="presence", message=error_msg)
+            to_process.append((key, file_path))
+
+        if self.errors:
             return False
 
-        if analyze_a_id: 
-            analyze_a_data = self.__load_data(file_a)
-            dataset_a_x = [item['relative_length'] for item in analyze_a_data.get("results").get("temperatures")]
-            dataset_a_y = [item['local_temp'] for item in analyze_a_data.get("results").get("temperatures")]
-            results["experiment_a"] = [dataset_a_x, dataset_a_y]
-            
-        if analyze_b_id:
-            analyze_b_data = self.__load_data(file_b)
-            dataset_b_x = [item['relative_length'] for item in analyze_b_data.get("results").get("temperatures")]
-            dataset_b_y = [item['local_temp'] for item in analyze_b_data.get("results").get("temperatures")]
-            results["experiment_b"] = [dataset_b_x, dataset_b_y]
+        results = {}
+        for key, file_path in to_process:
+            adapter = registry.get("new_fin_simulation").chart_adapter_factory()
+            data = self.__load_data(file_path)
+            if adapter:
+                results[key] = adapter.get_chart_data(data)
+            else:
+                raise ValueError(f"No Adapter found for analyze type: {"new_fin_simulation"}")             
 
         return results
 
@@ -116,37 +99,6 @@ class AnalyzeModel(DataValidation):
                 os.remove(previous_file_path)
             except OSError as e:
                 print(f"Error removing file {previous_file_path}: {e}")
-                
-
-    def __generate_content(self, filedata):
-        data = [
-                [_('Analyze Data')],
-            ]
-        if filedata.get("type") == "new_fin_analyze":
-            analyze_type = self.analyze_options.get(filedata.get("type")).get("button")
-            pre_analyze_data = filedata.get("analyze_data")
-            analyze_data = filedata.get("analyze_data").get("data")
-            results = filedata.get("results").get("temperatures")
-            data.append(["Analyze Type", analyze_type])
-            data.append([_("Base Temperature (°C)"), analyze_data.get("base_temperature")])        
-            data.append([_("Enviroment Base Temperature (°C)"), analyze_data.get("env_temperature")])        
-            data.append([_("End Fin Temperature (°C)"), analyze_data.get("temp_end_fin")])   
-            data.append([_("Radius (m)"), analyze_data.get("dimensions").get("radius")])   
-            data.append([_("A (m)"), analyze_data.get("dimensions").get("a")])   
-            data.append([_("B (m)"), analyze_data.get("dimensions").get("b")])   
-            data.append([_("Length (m)"), analyze_data.get("fin_length")])   
-            data.append([_("Convection Coefficient (kW/m²)"), analyze_data.get("convection_coefficient")])   
-            data.append([_("Material"), analyze_data.get("fin_material")])      
-            data.append([_("Solve Method"), self.__solve_method(pre_analyze_data.get("solver_method"))]) 
-            data.append([_("Heat Transfer (W)"), pre_analyze_data.get("heat_transfer")])    
-            data.append([_("Area (m²)"), pre_analyze_data.get("area")])    
-            data.append([_("Efficience"), pre_analyze_data.get("fin_efficience")])        
-            data.append([])
-            data.append([_("Point (m)"),_("Relative Length ()"), _("Temperature Distribuition ()"), _("Local Temperature (°C)")])
-            for result in results:
-                data.append([result.get("point"), result.get("relative_length"), result.get("temp_distribuition"), result.get("local_temp")])  
-            
-            return data     
 
     def __load_data(self,file):
         try:
@@ -158,15 +110,4 @@ class AnalyzeModel(DataValidation):
         except json.JSONDecodeError:
             print(f"Error: Failed to decode JSON from {file}.")
         return None
-    
-    
-    def __solve_method(self, code):
-        if code == 1:
-            return _("Infinity Fin")
-        elif code == 2:
-            return _("Adiabatic Fin")
-        elif code == 3:
-            return _("Specified Temperature")
-        elif code == 4:
-            return _("Specified Convection")
             
