@@ -46,12 +46,12 @@ class AnalysisController:
                                                   "name": self.__define_analyze_name(analyze_type, analyze_number)})
             
 
-    def change_active_view(self, analyze_id, view_type, size, container):
+    def activate_view(self, analyze_id, view_type, size, container):
         if view_type == "results":
-            self.__handle_result_view(analyze_id, size, container)
-        else:    
-            self.__handle_analyze_views(analyze_id, view_type, size, container)
-        
+            self.__open_result_view(analyze_id, size, container)
+        else:
+            self.__open_analysis_view(analyze_id, view_type, size, container)
+
         self.__update_screen()
 
     def run_analyze(self):
@@ -67,7 +67,7 @@ class AnalysisController:
             else:
                 analyze_data.get("view").hide_view()
                 
-    def __handle_analyze_views(self, analyze_id, analyze_type, size, container):
+    def __open_analysis_view(self, analyze_id, analyze_type, size, container):
         analyze_data = self.analyze_state_model.get_avaiable_analyzes().get(analyze_id)
         if analyze_data is None or analyze_data.get("view") is None:
             analyze_number = self.analyze_state_model.current_analyze_number(analyze_type) + 1 if analyze_data is None else analyze_data.get("analyze_number")
@@ -86,12 +86,11 @@ class AnalysisController:
         else:
             self.analyze_state_model.set_active_analyze(analyze_id)   
             
-    def __handle_result_view(self, view_id, size, container):
+    def __open_result_view(self, view_id, size, container):
         analyze_data = self.analyze_state_model.get_avaiable_analyzes().get(view_id)
         if analyze_data is None or analyze_data.get("view") is None:
             analyze_view = DataResultsView(container, size[0], size[1], registry.all())
 
-            
             self.analyze_state_model.add_analyze(view_id, 
                                                  {"type": "results", 
                                                   "view": analyze_view, 

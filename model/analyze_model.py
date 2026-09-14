@@ -38,11 +38,16 @@ class AnalyzeModel(DataValidation):
     
     def __generate_content(self, filedata):
         from model.default_analysis import registry
-        serializer = registry.get(filedata.get("type")).serializer_factory()
-        if serializer:
-            return serializer.serialize(filedata)    
-        else:
-            raise ValueError(f"No serializer found for analyze type: {filedata.get("type")}")   
+        spec = registry.get(filedata.get("type"))
+        if spec is None:
+            raise ValueError(f"No registry found for analyze type: {filedata.get("type")}")
+
+        serializer_cls = spec.serializer_factory
+        if serializer_cls is None:
+            raise ValueError(f"No serializer found for analyze type: {filedata.get("type")}")
+
+        serializer = serializer_cls()
+        return serializer.serialize(filedata)
     
     def save_analyze(self, analyze_id, analyze, analyze_data, results):
         analyze_state_model = state_model
@@ -82,12 +87,20 @@ class AnalyzeModel(DataValidation):
 
         results = {}
         for key, file_path in to_process:
-            adapter = registry.get("new_fin_simulation").chart_adapter_factory()
             data = self.__load_data(file_path)
-            if adapter:
-                results[key] = adapter.get_chart_data(data)
-            else:
-                raise ValueError(f"No Adapter found for analyze type: {"new_fin_simulation"}")             
+            if not isinstance(data, dict):
+                continue
+
+            spec = registry.get(data.get("type"))
+            if spec is None:
+                raise ValueError(f"No registry found for analyze type: {data.get("type")}")
+
+            adapter_cls = spec.chart_adapter_factory
+            if adapter_cls is None:
+                raise ValueError(f"No adapter found for analyze type: {data.get("type")}")
+
+            adapter = adapter_cls()
+            results[key] = adapter.get_chart_data(data)
 
         return results
 
