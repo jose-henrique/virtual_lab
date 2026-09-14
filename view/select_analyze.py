@@ -2,9 +2,10 @@ import dearpygui.dearpygui as dpg
 from gettext import gettext as _
 
 from model.utils.font_manager import FontManager
+from model.default_analysis import registry
 
 class SelectAnalyze:
-    def __init__(self, sidebar, analysis_options, controller):
+    def __init__(self, sidebar, controller):
         self.modal_name = "select_analyze_modal"
         self.icons = FontManager().get("icons_solid_base")
         self.loadedFont = FontManager().get("text_roboto_regular_base")
@@ -13,7 +14,6 @@ class SelectAnalyze:
         self.pos_x = 0
         self.pos_y = 0
         self.sidebar = sidebar
-        self.analzis_options = analysis_options
         self.analysis_controller = controller
 
         with dpg.theme() as self.button_new_theme:
@@ -43,8 +43,8 @@ class SelectAnalyze:
 
                 # --- SETTINGS SECTION ---
                 with dpg.group(tag="options"):
-                    for analyze in self.analzis_options.keys():
-                        dpg.add_button(label=self.analzis_options[analyze].get("button"), tag=analyze, width=-1, callback=self.__selected_analyze)
+                    for analyze in registry.all():
+                        dpg.add_button(label=analyze.button_label, tag=analyze.analysis_id, width=-1, callback=self.__selected_analyze)
                     
 
             dpg.bind_item_font("header_title", self.icons)

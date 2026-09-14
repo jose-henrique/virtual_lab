@@ -8,7 +8,7 @@ from view.data_results.dataset_view import DatasetView
 
 class DataResultsView:
 
-    def __init__(self, parent, width, height, analyze_id, analyze_options):
+    def __init__(self, parent, width, height, analyze_options):
         self.parent = parent
         self.width = width
         self.height = height
@@ -61,8 +61,8 @@ class DataResultsView:
         
     def __define_options(self, analyze_options):
         items = {}
-        for option, value in analyze_options.items():
-            items[f"{value.get("name")}"] = option
+        for item in analyze_options:
+            items[item.tag] = item.analysis_id
 
         return items
     

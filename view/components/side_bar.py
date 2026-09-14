@@ -68,7 +68,7 @@ class SideBar:
 
     def __select_tab(self, sender, app_data, user_data):
         children = dpg.get_item_children(self.tabs_group, slot=1)
-        self.analysis_controller.change_active_analyze(sender,user_data, dpg.get_item_rect_size(self.content_container), self.content_container)
+        self.analysis_controller.change_active_view(sender,user_data, dpg.get_item_rect_size(self.content_container), self.content_container)
         for child_tag in children:
             if dpg.get_item_alias(child_tag) == sender:
                 dpg.bind_item_theme(child_tag, self.tab_active)
