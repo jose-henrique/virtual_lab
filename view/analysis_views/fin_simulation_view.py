@@ -4,7 +4,9 @@ from view.analysis_views.fin_accordion_view import FinAccordionView
 from  view.canvas.fin_canvas import FinCanvas
 import uuid
 
-class FinSimluationView:
+from view.base_analysis_view import BaseAnalysisView
+
+class FinSimluationView(BaseAnalysisView):
 
     def __init__(self, parent, width, height, analyze_id):
         self.parent = parent
