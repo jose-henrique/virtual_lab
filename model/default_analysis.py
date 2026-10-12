@@ -25,7 +25,7 @@ registry.register(AnalysisSpec(
 registry.register(AnalysisSpec(
     analysis_id="new_conduction_simulation",
     label="CONDUCTION",
-    button_label="CONDUCTION ANALYZE",
+    button_label="CONDUCTION",
     tag="conduction",
     view_factory=ConductionSimulationView,
     controller_factory=ConductionAnalysesController,

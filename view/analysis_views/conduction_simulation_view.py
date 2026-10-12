@@ -9,19 +9,26 @@ class ConductionSimulationView(BaseAnalysisView):
     def __init__(self, parent, width, height, analyze_id):
         self.parent = parent
         self.row_name = f"conduction_row_{id(self)}"
-        self.canvas = ConductionCanvas(self.row_name, width - 320, height - 50, 0, 0)
+        self.table = f"conduction_table_{id(self)}"
+        parent_width, parent_height = dpg.get_item_rect_size(parent)
+        self.canvas = ConductionCanvas(
+            self.row_name,
+            max(1, parent_width - 320),
+            max(1, parent_height - 50),
+            0,
+            0,
+        )
         self.options = ConductionAccordionView(self.row_name, self.canvas, analyze_id)
-        with dpg.table(parent=parent, header_row=False, show=False, tag=f"conduction_table_{id(self)}") as table:
-            dpg.add_table_column(width_stretch=True)
-            dpg.add_table_column(width_fixed=True, init_width_or_weight=300)
-            with dpg.table_row(tag=self.row_name):
-                self.canvas.setup_canvas()
-                self.options.render()
-                self.options.show_options()
-        self.table = table
+
+        dpg.add_table(parent=parent, header_row=False, show=False, tag=self.table)
+        dpg.add_table_column(width_stretch=True, parent=self.table)
+        dpg.add_table_column(width_fixed=True, init_width_or_weight=300, parent=self.table)
+        with dpg.table_row(tag=self.row_name, parent=self.table):
+            self.canvas.setup_canvas()
+            self.options.render()
+            self.options.show_options()
 
     def show_view(self):
-        print("chamou aqui")
         dpg.show_item(self.table)
 
     def hide_view(self):

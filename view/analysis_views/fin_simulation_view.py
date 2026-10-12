@@ -29,6 +29,17 @@ class FinSimluationView(BaseAnalysisView):
                 self.canvas.setup_canvas()
                 self.fin_accordion_view.render_accordion()
                 self.fin_accordion_view.show_options()
+                self.set_form_data({
+            "base_temperature": 80,
+            "env_temperature": 25,
+            "convection_coefficient": 36,
+            "radius": 5,
+            "length": 22,
+            "nodes": 50,
+            "material": "copper",
+            "geometry_type": "Circle",
+            "solve_method": "Infinity Fin"
+        })
 
     def show_view(self):
         dpg.configure_item(self.table_id, show=True)

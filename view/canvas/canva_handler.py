@@ -6,8 +6,8 @@ class CanvaHandler:
     def __init__(self,parent, width, height, offset_x,offset_y):
         self.width = width
         self.height = height
-        self.offset_x = 0
-        self.offset_y = 0
+        self.offset_x = offset_x
+        self.offset_y = offset_y
         self.parent = parent
         self.graphic_handler = GraphicHandler()
     
@@ -22,13 +22,14 @@ class CanvaHandler:
     def save_image(self, user_inputs):
         image_handler = ImageHandler(
             self.graphic_handler.command_set,
-            self.width, self.height, 
-            (self.width - (self.fin_width + 20))/2, 
-            width=user_inputs["image_size"][0], 
+            self.width,
+            self.height,
+            self.offset_x,
+            width=user_inputs["image_size"][0],
             height=user_inputs["image_size"][1],
             location=user_inputs["location"],
             filename=user_inputs["filename"],
-            background_color=user_inputs["background_color"]
-            )
+            background_color=user_inputs["background_color"],
+        )
         return image_handler.generate_and_save()
         

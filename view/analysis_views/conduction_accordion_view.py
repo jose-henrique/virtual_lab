@@ -3,6 +3,7 @@ from gettext import gettext as _
 
 from controller.conduction_analyses_controller import ConductionAnalysesController
 from model.material_property_getter import PropertiesGetter
+from view.components.input_components import InputComponents
 
 
 class ConductionAccordionView:
@@ -13,21 +14,21 @@ class ConductionAccordionView:
         self.unique_id = id(self)
         self.layers = []
         self.layer_group = f"conduction_layers_{self.unique_id}"
+        self.layer_scroll = f"conduction_layers_scroll_{self.unique_id}"
+        self.input_components = InputComponents()
+        self.tracked_fields = []
 
     def render(self):
-        with dpg.child_window(parent=self.parent, width=300, show=False, tag=f"conduction_options_{self.unique_id}"):
+        with dpg.child_window(parent=self.parent, width=-1, height=-1, show=False, tag=f"conduction_options_{self.unique_id}"):
             dpg.add_combo([_("Series"), _("Parallel")], default_value=_("Series"),
-                          tag=self._tag("configuration"), callback=self._on_input_changed)
-            dpg.add_input_float(label=_("Hot temperature (°C)"), tag=self._tag("hot_temperature"), default_value=100,
-                                callback=self._on_input_changed)
-            dpg.add_input_float(label=_("Cold temperature (°C)"), tag=self._tag("cold_temperature"), default_value=20,
-                                callback=self._on_input_changed)
-            dpg.add_input_float(label=_("Time (s)"), tag=self._tag("time"), default_value=1, min_value=0.0001,
-                                callback=self._on_input_changed)
+                          tag=self.__register_field("configuration"), callback=self._on_input_changed)
+            self.input_components.input_float(self.__register_field("hot_temperature"), "°C", 0.5, "Hot temperature", 0, 1000, default_val=100, callback=self._on_input_changed)
+            self.input_components.input_float(self.__register_field("cold_temperature"), "°C", 0.5, "Cold temperature", 0, 1000, default_val=100, callback=self._on_input_changed)
+            self.input_components.input_float(self.__register_field("time"), "s", 0.5, "Time", 0.0001, 1000, default_val=10, callback=self._on_input_changed)
             dpg.add_button(label=_("Add layer"), callback=self._add_layer)
-            with dpg.group(tag=self.layer_group):
-                pass
-            dpg.add_button(label=_("Run simulation"), callback=self.process_results)
+            with dpg.child_window(height=-1, tag=self.layer_scroll):
+                with dpg.group(tag=self.layer_group):
+                    pass
         self._add_layer()
         self._update_visualization()
 
@@ -44,10 +45,10 @@ class ConductionAccordionView:
 
     def _solve_current_data(self, save=False):
         data = {
-            "configuration": "series" if dpg.get_value(self._tag("configuration")) == "Series" else "parallel",
-            "hot_temperature": dpg.get_value(self._tag("hot_temperature")),
-            "cold_temperature": dpg.get_value(self._tag("cold_temperature")),
-            "time": dpg.get_value(self._tag("time")),
+            "configuration": "series" if dpg.get_value(self.__register_field("configuration")) == _("Series") else "parallel",
+            "hot_temperature": dpg.get_value(self.__register_field("hot_temperature")),
+            "cold_temperature": dpg.get_value(self.__register_field("cold_temperature")),
+            "time": dpg.get_value(self.__register_field("time")),
             "layers": [],
         }
         for layer in self.layers:
@@ -56,18 +57,12 @@ class ConductionAccordionView:
                 "thickness": dpg.get_value(layer["thickness"]),
                 "area": dpg.get_value(layer["area"]),
             })
-        controller = ConductionAnalysesController()
         if save:
-            return controller.solve_analyses({"data": data}, self.analyze_id)
-        results, errors = controller.solve_preview(data)
-        return {"results": results, "errors": errors, "status": 0 if results else -1}
+            return ConductionAnalysesController().solve_analyses({"data": data}, self.analyze_id)
+        return data
 
     def _update_visualization(self):
-        response = self._solve_current_data()
-        if response["status"] == 0:
-            self.canvas.show_results(response["results"])
-        else:
-            self.canvas.clear_results()
+        self.canvas.show_wall(self._solve_current_data())
 
     def _on_input_changed(self, sender=None, app_data=None, user_data=None):
         self._update_visualization()
@@ -80,20 +75,26 @@ class ConductionAccordionView:
 
     def _add_layer(self, sender=None, app_data=None, user_data=None):
         index = len(self.layers) + 1
-        prefix = f"conduction_layer_{self.unique_id}_{index}"
-        material = f"{prefix}_material"
-        thickness = f"{prefix}_thickness"
-        area = f"{prefix}_area"
+        material = self.__register_field(f"material_{index}")
+        thickness = self.__register_field(f"thickness_{index}")
+        area = self.__register_field(f"area_{index}")
         materials = PropertiesGetter().list_materials()
-        dpg.add_combo(materials, label=f"Layer {index} material", parent=self.layer_group,
-                  tag=material, default_value=materials[0], callback=self._on_input_changed)
-        dpg.add_input_float(label=_("Thickness (mm)"), default_value=10, min_value=0.0001,
-                            parent=self.layer_group, tag=thickness, callback=self._on_input_changed)
-        dpg.add_input_float(label=_("Area (m²)"), default_value=1, min_value=0.0001,
-                            parent=self.layer_group, tag=area, callback=self._on_input_changed)
+        dpg.add_spacer(height=10, parent=self.layer_group)
+        with dpg.group(parent=self.layer_group):
+            dpg.add_text(f"Layer {index}", color=(150, 150, 150))
+            dpg.add_combo(materials, label="",
+                    tag=material, default_value=materials[0], callback=self._on_input_changed)
+        self.input_components.input_float(thickness, "mm", 1, _("Thickness (mm)"), 0.0001, 1000, callback=self._on_input_changed, default_val=10, parent=self.layer_group)
+        self.input_components.input_float(area, "m²", 1, _("Area (m²)"), 0.0001, 1000, callback=self._on_input_changed, default_val=1, parent=self.layer_group)
         self.layers.append({"material": material, "thickness": thickness, "area": area})
         if dpg.does_item_exist(self.layer_group):
             self._update_visualization()
 
-    def _tag(self, name):
-        return f"conduction_{name}_{self.unique_id}"
+        if dpg.does_item_exist(self.layer_scroll):
+            max_scroll = dpg.get_y_scroll_max(self.layer_scroll)
+            dpg.set_y_scroll(self.layer_scroll, max_scroll)
+
+    def __register_field(self, base_name):
+            if base_name not in self.tracked_fields:
+                self.tracked_fields.append(base_name)
+            return f"{base_name}_{self.unique_id}"
