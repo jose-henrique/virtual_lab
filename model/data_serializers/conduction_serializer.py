@@ -4,6 +4,7 @@ from gettext import gettext as _
 class ConductionSerializer:
     def serialize(self, payload):
         analyze_data = payload.get("analyze_data", {})
+        analyze_data = analyze_data.get("data", analyze_data)
         results = payload.get("results", {})
         rows = [[_("Analyze Data")],
                 [_("Analyze Type"), _("Wall Conduction Analysis")],
@@ -19,7 +20,7 @@ class ConductionSerializer:
                 [_("Layer"), _("Material"), _("Thickness (m)"), _("Area (m²)"),
                  _("Thermal Conductivity (W/m.K)"), _("Resistance (K/W)"), _("Heat Rate (W)")]]
 
-        layers = results.get("layers", analyze_data.get("layers", []))
+        layers = results.get("layers") or analyze_data.get("layers", [])
         heat_rates = results.get("layer_heat_rates", [])
         for index, layer in enumerate(layers):
             rows.append([

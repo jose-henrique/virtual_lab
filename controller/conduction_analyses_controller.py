@@ -21,4 +21,6 @@ class ConductionAnalysesController:
 
     def _save_results(self, user_inputs, results, analyze_id):
         analyze = state_model.get_analyze(analyze_id)
-        AnalyzeModel().save_analyze(analyze_id, analyze, user_inputs, results)
+        AnalyzeModel().save_analyze(
+            analyze_id, analyze, {"data": user_inputs}, results
+        )

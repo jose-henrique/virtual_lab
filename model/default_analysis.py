@@ -8,6 +8,10 @@ from view.analysis_views.conduction_simulation_view import ConductionSimulationV
 from controller.conduction_analyses_controller import ConductionAnalysesController
 from model.data_serializers.conduction_serializer import ConductionSerializer
 from model.chart_adapters.conduction_chart_adapter import ConductionChartAdapter
+from view.analysis_views.forced_convection_simulation_view import ForcedConvectionSimulationView
+from controller.forced_convection_analyses_controller import ForcedConvectionAnalysesController
+from model.data_serializers.forced_convection_serializer import ForcedConvectionSerializer
+from model.chart_adapters.forced_convection_chart_adapter import ForcedConvectionChartAdapter
 
 registry = AnalysisRegistry()
 
@@ -31,4 +35,15 @@ registry.register(AnalysisSpec(
     controller_factory=ConductionAnalysesController,
     serializer_factory=ConductionSerializer,
     chart_adapter_factory=ConductionChartAdapter
+    ))
+
+registry.register(AnalysisSpec(
+    analysis_id="new_forced_convection_simulation",
+    label="FORCED CONVECTION",
+    button_label="FORCED CONVECTION",
+    tag="forced_convection",
+    view_factory=ForcedConvectionSimulationView,
+    controller_factory=ForcedConvectionAnalysesController,
+    serializer_factory=ForcedConvectionSerializer,
+    chart_adapter_factory=ForcedConvectionChartAdapter
     ))

@@ -29,3 +29,19 @@ def test_conduction_serializer_includes_engineering_results():
 
     assert ["Heat Rate (W)", 20.0] in rows
     assert ["Heat Exchanged (J)", 40.0] in rows
+
+
+def test_conduction_serializer_reads_nested_input_data():
+    payload = {
+        "analyze_data": {"data": {"layers": [{"material": "copper"}]}},
+        "results": {
+            "configuration": "series",
+            "layers": [],
+            "profile": [],
+        },
+    }
+
+    rows = ConductionSerializer().serialize(payload)
+
+    assert ["Configuration", "series"] in rows
+    assert [1, "copper", None, None, None, None, None] in rows

@@ -37,8 +37,10 @@ Este repositório foi construído aplicando **boas práticas de engenharia de so
 ### 2. Condução em Parede Plana Composta `[Em Desenvolvimento]`
 - Modelagem de redes de resistência térmica para paredes multicamadas em regime permanente.
 
-### 3. Convecção Forçada Interna `[Planejado]`
-- Visualização de escoamento e troca de calor em tubos com cálculo de taxa de transferência térmica.
+### 3. Convecção Forçada Interna `[Implementado]`
+- Simulação de escoamento interno em tubo circular, com cálculo de Reynolds, Prandtl, Nusselt e coeficiente convectivo.
+- Estimativa da temperatura de saída e da taxa de calor para temperatura de parede constante, com perfil térmico ao longo do tubo.
+- Correlação laminar para escoamento plenamente desenvolvido e correlação de Gnielinski para escoamento turbulento.
 
 ---
 
