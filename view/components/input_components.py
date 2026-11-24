@@ -29,6 +29,11 @@ class InputComponents:
                 # Padding to make it look like a label
                 dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 4, 5)
 
+    @staticmethod
+    def _unit_width(unit):
+        # Width of the unit badge, wide enough for the whole unit text (e.g. "kg/m³", "J/kg.K").
+        return max(20, 9 * len(unit) + 6)
+
     def input_float(self, tag, unit, step, label, min_val, max_val,step_fast=0, callback=None, default_val=0, show=True, parent=0):
         with dpg.group(show=show,parent=parent) as group:
             dpg.add_text(label, color=(150, 150, 150))
@@ -59,7 +64,7 @@ class InputComponents:
                 p_btn = dpg.add_button(label="+", width=30, callback=lambda: update_val(step))
                 dpg.add_spacer(width=5)
                 #dpg.add_text(unit, color=(100, 100, 100))  
-                label = dpg.add_selectable(label=unit, default_value=True, span_columns=False, width=20, height=15) 
+                label = dpg.add_selectable(label=unit, default_value=True, span_columns=False, width=self._unit_width(unit), height=15) 
         dpg.bind_item_theme(m_btn, self.button_theme)  
         dpg.bind_item_theme(p_btn, self.button_theme)  
         dpg.bind_item_theme(tag, self.input_theme)
@@ -96,7 +101,7 @@ class InputComponents:
                     p_btn = dpg.add_button(label="+", width=30, callback=lambda: update_val(step))
                     dpg.add_spacer(width=5)
                     #dpg.add_text(unit, color=(100, 100, 100))  
-                    label = dpg.add_selectable(label=unit, default_value=True, span_columns=False, width=20, height=15) 
+                    label = dpg.add_selectable(label=unit, default_value=True, span_columns=False, width=self._unit_width(unit), height=15) 
             dpg.bind_item_theme(m_btn, self.button_theme)  
             dpg.bind_item_theme(p_btn, self.button_theme)  
             dpg.bind_item_theme(tag, self.input_theme)

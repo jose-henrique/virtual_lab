@@ -15,15 +15,14 @@ class DataResultsController:
         
     def define_aviable_options(self, filter=None):
         avaiable_analysis = self.state_model.get_avaiable_analyzes()
-        filtered_analyzes = [analyze for analyze in avaiable_analysis.values() if analyze['type'] == filter] if filter is not None else avaiable_analysis
-        
+
         options = {}
-        if not filtered_analyzes:
-            return []
-        for k, v in avaiable_analysis.items():
-            if v.get("type") == "results":
+        for analyze_id, analyze in avaiable_analysis.items():
+            if analyze.get("type") == "results":
                 continue
-            options[v.get("name")] = k
+            if filter is not None and analyze.get("type") != filter:
+                continue
+            options[analyze.get("name")] = analyze_id
 
         return options
     

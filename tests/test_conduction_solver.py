@@ -59,3 +59,31 @@ def test_conduction_rejects_material_outside_database():
 
     assert solver.solve(data) is False
     assert "registered" in solver.errors[0]
+
+def test_conduction_parallel_exports_only_branch_heat_rates():
+    material = PropertiesGetter().list_materials()[0]
+    data = {
+        "configuration": "parallel",
+        "hot_temperature": 80.0,
+        "cold_temperature": 20.0,
+        "time": 1.0,
+        "layers": [
+            {"material": material, "thickness": 10.0, "area": 1.0},
+            {"material": material, "thickness": 20.0, "area": 1.0},
+        ],
+    }
+
+    result = ConductionSolver().solve(data)
+
+    assert result["profile"] == []
+    assert len(result["layer_heat_rates"]) == 2
+
+
+def test_material_database_has_insulation_and_metal_categories():
+    getter = PropertiesGetter()
+
+    assert "glass_wool" in getter.list_materials()
+    assert "glass_wool" not in getter.list_materials(category="metal")
+    assert set(getter.list_materials(category="metal")) == {
+        "carbon_steel", "aluminum", "copper", "brass", "cast_iron",
+    }

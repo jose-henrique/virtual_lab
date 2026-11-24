@@ -31,16 +31,21 @@ Este repositório foi construído aplicando **boas práticas de engenharia de so
   - Extremidade adiabática;
   - Extremidade com temperatura especificada;
   - Extremidade com convecção.
-- Discretização espacial interativa (geração de nós) com condutividade térmica ($k$) e coeficiente de convecção ($h$) personalizáveis.
+- Parâmetro da aleta $m = \sqrt{hP/(kA_c)}$, com cálculo da taxa de calor, da **eficiência** ($\eta$) e da **efetividade** ($\varepsilon$).
+- Discretização espacial interativa (geração de nós da base, $x = 0$, até a ponta, $x = L$) com condutividade térmica ($k$) e coeficiente de convecção ($h$, em W/m².K) personalizáveis.
 - Mapeamento de gradiente térmico em tempo real utilizando escala de cores (*colormap* `coolwarm`).
 
-### 2. Condução em Parede Plana Composta `[Em Desenvolvimento]`
-- Modelagem de redes de resistência térmica para paredes multicamadas em regime permanente.
+### 2. Condução em Parede Plana Composta `[Implementado]`
+- Modelagem de redes de resistência térmica para paredes multicamadas em regime permanente, com camadas em **série** ou em **paralelo**.
+- Cálculo da resistência total, taxa e fluxo de calor, calor trocado no intervalo de tempo e temperaturas nas interfaces (arranjo em série) ou taxa de calor por ramo (arranjo em paralelo).
+- Banco de materiais com metais (aço carbono, alumínio, cobre, latão, ferro fundido), materiais de construção (tijolo comum, concreto, madeira) e isolantes (lã de vidro, EPS).
+- Desenho da parede com camadas proporcionais à espessura (série) ou à área (paralelo) e mapa de cores de temperatura.
 
 ### 3. Convecção Forçada Interna `[Implementado]`
 - Simulação de escoamento interno em tubo circular, com cálculo de Reynolds, Prandtl, Nusselt e coeficiente convectivo.
 - Estimativa da temperatura de saída e da taxa de calor para temperatura de parede constante, com perfil térmico ao longo do tubo.
-- Correlação laminar para escoamento plenamente desenvolvido e correlação de Gnielinski para escoamento turbulento.
+- Correlação laminar com região de entrada térmica (Edwards et al., apresentada no Çengel), que tende a Nu = 3,66 em tubos longos, e correlação de Gnielinski para escoamento turbulento.
+- Aviso quando o tubo é mais curto que o comprimento de entrada térmica ($L < L_t$) e indicação da temperatura média do fluido, na qual as propriedades devem ser avaliadas.
 
 ---
 
@@ -48,7 +53,8 @@ Este repositório foi construído aplicando **boas práticas de engenharia de so
 
 - **Linguagem:** Python 3.10+
 - **Interface Gráfica:** [Dear PyGui](https://github.com/hoffstadt/DearPyGui)
-- **Análise Numérica e Gráficos:** NumPy, Matplotlib, Pandas
+- **Análise Numérica e Gráficos:** NumPy, Matplotlib
+- **Testes:** pytest
 - **Padrão de Projeto:** Model-View-Controller (MVC) + Programação Orientada a Objetos (POO)
 
 ---
@@ -56,9 +62,25 @@ Este repositório foi construído aplicando **boas práticas de engenharia de so
 ## 🏗️ Estrutura do Projeto
 
 ```text
-src/
-├── controllers/    # Intermedeia os inputs da interface e os modelos físicos
-├── models/         # Motores de cálculo numérico (ex: FinSolver)
-├── views/          # Componentes visuais e renderização de janelas no Dear PyGui
-├── utils/          # Módulos de validação, formatação e exportação (CSV/PNG)
-└── main.py         # Ponto de entrada da aplicação
+.
+├── controller/          # Intermedeia os inputs da interface e os modelos físicos
+├── model/               # Solvers (FinSolver, ConductionSolver, ForcedConvectionSolver),
+│   ├── chart_adapters/  #   adaptadores de gráfico,
+│   ├── data_serializers/#   serializadores de exportação CSV
+│   └── utils/           #   e utilitários (fontes, imagens, caminhos)
+├── view/                # Telas, painéis de análise, canvas e componentes Dear PyGui
+├── data/                # Banco de materiais (materials_properties.pkl e script gerador)
+├── fonts/               # Fontes da interface
+├── tests/               # Testes automatizados (pytest)
+└── main.py              # Ponto de entrada da aplicação
+```
+
+## ▶️ Como executar
+
+```bash
+pip install -r requirements.txt
+python main.py        # inicia a aplicação
+python -m pytest      # roda os testes
+```
+
+Para alterar o banco de materiais, edite `data/generate_material_property.py` e execute-o para regenerar `data/materials_properties.pkl`.

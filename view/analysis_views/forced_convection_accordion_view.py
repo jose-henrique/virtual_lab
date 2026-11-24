@@ -26,6 +26,7 @@ class ForcedConvectionAccordionView:
                 self.input_components.input_float(self._field("inlet_temperature"), "°C", 1, _("Inlet Fluid Temperature"), -273.15, 2000, default_val=20, callback=self._on_input_changed)
                 self.input_components.input_float(self._field("wall_temperature"), "°C", 1, _("Constant Wall Temperature"), -273.15, 2000, default_val=80, callback=self._on_input_changed)
             with dpg.collapsing_header(label=_("Fluid Properties"), default_open=True):
+                dpg.add_text(_("Use properties at the mean bulk temperature (Tin + Tout)/2, shown after the run."), color=(150, 150, 150), wrap=280)
                 self.input_components.input_float(self._field("density"), "kg/m³", 1, _("Density"), 0.0001, 100000, default_val=997, callback=self._on_input_changed)
                 self.input_components.input_float(self._field("viscosity_mpa_s"), "mPa.s", 0.01, _("Dynamic Viscosity"), 0.0001, 100000, default_val=0.89, callback=self._on_input_changed)
                 self.input_components.input_float(self._field("thermal_conductivity"), "W/m.K", 0.01, _("Thermal Conductivity"), 0.0001, 100000, default_val=0.6, callback=self._on_input_changed)

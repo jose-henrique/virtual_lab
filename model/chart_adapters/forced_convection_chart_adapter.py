@@ -1,4 +1,6 @@
 class ForcedConvectionChartAdapter:
+    x_label = "Position along the tube (m)"
+
     def get_chart_data(self, data):
         profile = data.get("results", {}).get("profile", [])
         return [

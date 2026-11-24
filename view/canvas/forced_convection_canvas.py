@@ -82,6 +82,20 @@ class ForcedConvectionCanvas(CanvaHandler):
             tag=f"forced_convection_summary_{id(self)}", current_only=True,
         )
 
+        mean_bulk = (results["inlet_temperature"] + results["outlet_temperature"]) / 2
+        notes = [f"Fluid properties should be evaluated at Tm = (Tin + Tout)/2 = {mean_bulk:.2f} °C"]
+        if results.get("thermally_developing"):
+            notes.append(
+                f"Thermally developing flow: L = {results['length']:.4g} m < Lt = {results['thermal_entry_length']:.4g} m "
+                f"(entry-region correlation applied)"
+            )
+        for index, note in enumerate(notes):
+            self.graphic_handler.draw_text(
+                [left, bottom + 40 + 22 * index], note,
+                color=(255, 200, 90), parent=group, size=15,
+                tag=f"forced_convection_note_{index}_{id(self)}", current_only=True,
+            )
+
     def show_results(self, results):
         self.show_experiment(results)
 

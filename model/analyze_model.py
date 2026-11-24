@@ -101,6 +101,7 @@ class AnalyzeModel(DataValidation):
 
             adapter = adapter_cls()
             results[key] = adapter.get_chart_data(data)
+            results.setdefault("x_labels", {})[key] = getattr(adapter, "x_label", "")
 
         return results
 

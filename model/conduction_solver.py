@@ -52,11 +52,9 @@ class ConductionSolver:
                 (data["hot_temperature"] - data["cold_temperature"]) / layer["resistance"]
                 for layer in layers
             ]
-            profile = [
-                {"position": layer["index"], "temperature": data["hot_temperature"],
-                 "heat_rate": layer_heat_rates[index]}
-                for index, layer in enumerate(layers)
-            ]
+            # Parallel branches have no single through-wall temperature profile;
+            # the meaningful result is the heat rate of each branch (layer_heat_rates).
+            profile = []
 
         return {
             "configuration": data["configuration"],

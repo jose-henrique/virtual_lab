@@ -29,14 +29,30 @@ def test_turbulent_flow_calculates_heat_transfer_and_temperature_profile():
     assert math.isclose(result["profile"][-1]["heat_rate"], result["heat_rate"])
 
 
-def test_laminar_flow_uses_fully_developed_correlation():
+def test_laminar_flow_uses_thermal_entry_correlation():
     data = _water_data(velocity=0.01)
 
     result = ForcedConvectionSolver().solve(data)
+    re_pr = result["reynolds_number"] * result["prandtl_number"]
+    graetz = (data["diameter"] / data["length"]) * re_pr
+    expected = 3.66 + 0.065 * graetz / (1 + 0.04 * graetz ** (2 / 3))
 
     assert result["reynolds_number"] < 2300
-    assert result["correlation"] == "Laminar, fully developed"
-    assert result["nusselt_number"] == 3.66
+    assert result["correlation"] == "Laminar, thermal entry (Edwards)"
+    assert math.isclose(result["nusselt_number"], expected)
+    assert result["nusselt_number"] > 3.66
+    assert math.isclose(result["thermal_entry_length"], 0.05 * re_pr * data["diameter"])
+    assert result["thermally_developing"] is True
+
+
+def test_laminar_flow_in_long_tube_tends_to_fully_developed_value():
+    data = _water_data(velocity=0.01)
+    data["length"] = 10000.0
+
+    result = ForcedConvectionSolver().solve(data)
+
+    assert math.isclose(result["nusselt_number"], 3.66, rel_tol=1e-2)
+    assert result["thermally_developing"] is False
 
 
 def test_invalid_fluid_properties_are_rejected():

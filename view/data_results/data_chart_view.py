@@ -22,14 +22,17 @@ class DataChartView:
             height= self.height_window,
             show=True):
                 with dpg.plot(label=_("Experiment Chart"), width=-1, height=-1):
-                    dpg.add_plot_axis(dpg.mvXAxis, label=_("Relative Length ()"), tag=self.x_axis)
+                    dpg.add_plot_axis(dpg.mvXAxis, label=_("Position"), tag=self.x_axis)
                     dpg.add_plot_axis(dpg.mvYAxis, label=_("Temperature (°C)"), tag=self.y_axis)
                     
                     dpg.add_plot_legend()
 
-    def update_chart(self, dataset_a, dataset_b):
+    def update_chart(self, dataset_a, dataset_b, x_label=None):
         if not dpg.does_item_exist(self.window_name):
             return
+
+        if x_label:
+            dpg.configure_item(self.x_axis, label=x_label)
         
         if dataset_a:
             self.remove_series("a")

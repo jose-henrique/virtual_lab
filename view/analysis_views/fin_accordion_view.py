@@ -50,11 +50,11 @@ class FinAccordionView(ExperimentsOptionsMasterView):
                     self.input_components.input_float(self.__register_field("length"), "mm", 0.5, _("Length"), 0, 1000, callback=self.__update_fin_length)
                 with dpg.collapsing_header(label=_("Physical Properties"), default_open=True):
                     properties = PropertiesGetter()
-                    dpg.add_combo(properties.list_materials(), default_value=_("Select Material"), tag=self.__register_field("material"))
+                    dpg.add_combo(properties.list_materials(category="metal"), default_value=_("Select Material"), tag=self.__register_field("material"))
                     self.input_components.input_float(self.__register_field("base_temperature"), "°C", 0.5, _("Base Temperature"), 0, 1000, callback=self.__update_base_temp)
                     self.input_components.input_float(self.__register_field("end_temp_fin"), "°C", 0.5, _("Temp at the of the fin"), 0, 1000)
                 with dpg.collapsing_header(label=_("Enviroment"), default_open=True):
-                    self.input_components.input_float(self.__register_field("convection_coefficient"), "KW/m².K", 0.5, _("Convection Coefficient"), 0, 1000)
+                    self.input_components.input_float(self.__register_field("convection_coefficient"), "W/m².K", 0.5, _("Convection Coefficient"), 0, 1000)
                     self.input_components.input_float(self.__register_field("env_temperature"), "°C", 0.5, _("Env. Temp."), 0, 1000)
                 with dpg.collapsing_header(label=_("Run Simulation"), default_open=True):
                     self.input_components.input_int(self.__register_field("nodes"), "N", 1, _("Nodes"), 0, 1000)

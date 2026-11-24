@@ -33,3 +33,6 @@ def test_fin_serializer_generates_rows():
     assert isinstance(rows, list)
     print(rows)
     assert rows[1][1] == "Fin Analysis"
+    # Legacy files stored the effectiveness as "fin_efficience".
+    assert ["Fin Effectiveness ()", 66.75] in rows
+    assert ["Convection Coefficient (W/m².K)", 36.0] in rows
