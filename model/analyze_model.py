@@ -28,7 +28,7 @@ class AnalyzeModel(DataValidation):
             saved_data = self.__load_data(file)
             data = self.__generate_content(saved_data)
             with open(filename, 'w', newline='', encoding='utf-8') as file:
-                writer = csv.writer(file)
+                writer = csv.writer(file, delimiter=';')
                 writer.writerows(data)
             
             return 0    
