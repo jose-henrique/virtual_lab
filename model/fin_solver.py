@@ -22,10 +22,12 @@ class FinSolver(DataValidation):
         self.__perimeter_solve(data["dimensions"])
         self.__area_solve(data["dimensions"])
         heat_transfer = self.__calculate_heat_transfer(data, properties)
+        theta_b = data.get("base_temperature") - data.get("env_temperature")
         return {
             "area": self.area,
             "perimeter": self.perimeter,
-            "fin_efficience": self.__solve_fin_efficience(heat_transfer, data["convection_coefficient"], (data.get("base_temperature") - data.get("env_temperature"))),
+            "fin_effectiveness": self.__solve_fin_effectiveness(heat_transfer, data["convection_coefficient"], theta_b),
+            "fin_efficiency": self.__solve_fin_efficiency(heat_transfer, data["convection_coefficient"], theta_b, data["fin_length"]),
             "temp_results": self.__generate_array(data, properties),
             "heat_transfer": heat_transfer
             }
@@ -58,11 +60,13 @@ class FinSolver(DataValidation):
     
     
     def __generate_array(self, data, properties):
+        # Nodes are evenly spaced from the base (x = 0, T = Tb) to the tip (x = L).
         length = data["fin_length"]
-        node_length = length/data["node_count"]
-        point = length/data["node_count"]
+        node_count = data["node_count"]
+        node_length = length/(node_count - 1)
         temp_array = []
-        for i in range(0, data["node_count"]):
+        for i in range(0, node_count):
+            point = i * node_length
             if self.solver_method == 1:
                 temp_distribuition =  self.__temp_distribuiton_infinity_fin(data, point, properties)
             elif self.solver_method == 2:
@@ -78,15 +82,13 @@ class FinSolver(DataValidation):
                     "temp_distribuition": temp_distribuition,
                     "relative_length": point / length
                 })
-            
-            point += node_length
         return temp_array
 
 
     def __temp_distribuiton_infinity_fin(self, data, analyses_point, properties):
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         return math.exp(-(m*analyses_point))
 
     def __heat_transfer_infinity_fin(self,data, properties):
@@ -100,7 +102,7 @@ class FinSolver(DataValidation):
     def __temp_distribuiton_adiabatic_fin(self, data, analyses_point, properties):
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         return (math.cosh(m*(data["fin_length"] - analyses_point)))/(math.cosh(m*data["fin_length"]))
 
     def __heat_transfer_adiabatic_fin(self, data, properties):
@@ -108,14 +110,14 @@ class FinSolver(DataValidation):
         env_temperature = data["env_temperature"]
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         greater_m = math.sqrt(convection_coefficient * self.perimeter * thermal_conductivity * self.area) * (base_temperature - env_temperature)
         return greater_m * math.tanh(m*data["fin_length"])
 
     def __temp_distribuiton_specified_temp(self, data, analyses_point, properties):
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         teta_l = data.get("temp_end_fin") - data.get("env_temperature")
         teta_b = data.get("base_temperature") - data.get("env_temperature")
         return (((teta_l/teta_b)*math.sinh(m*analyses_point))+(math.sinh(m*(data["fin_length"]-analyses_point))))/(math.sinh(m*data["fin_length"]))
@@ -127,7 +129,7 @@ class FinSolver(DataValidation):
         thermal_conductivity = properties["thermal_conductivity"]
         theta_l = data["temp_end_fin"] - env_temperature
         theta_b = base_temperature - env_temperature
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         greater_m = math.sqrt(convection_coefficient * self.perimeter * thermal_conductivity * self.area) * (base_temperature - env_temperature)
         return greater_m * ((math.cosh(m*data["fin_length"]) - (theta_l/theta_b))/ math.sinh(m*data["fin_length"]))
 
@@ -135,7 +137,7 @@ class FinSolver(DataValidation):
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
         length = data["fin_length"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         return ((math.cosh(m*(length-analyses_point)))+((convection_coefficient/(m*thermal_conductivity))*math.sinh(m*(length-analyses_point))))/((math.cosh(m*length))+((convection_coefficient/(m*thermal_conductivity))*math.sinh(m*length)))
 
     def __heat_transfer_convection(self, data, properties):
@@ -144,7 +146,7 @@ class FinSolver(DataValidation):
         convection_coefficient = data["convection_coefficient"]
         thermal_conductivity = properties["thermal_conductivity"]
         length = data["fin_length"]
-        m = (convection_coefficient * self.perimeter)/(thermal_conductivity * self.area)
+        m = self.__m(convection_coefficient, thermal_conductivity)
         greater_m = math.sqrt(convection_coefficient * self.perimeter * thermal_conductivity * self.area) * (base_temperature - env_temperature)
         return greater_m * ((math.sinh(m*length) + ((convection_coefficient/(m*thermal_conductivity))*math.cosh(m*length)))/(math.cosh(m*length) + ((convection_coefficient/(m*thermal_conductivity)) * math.sinh(m*length))))
     
@@ -180,8 +182,23 @@ class FinSolver(DataValidation):
         properties = PropertiesGetter()
         return properties.get_material(material)
     
-    def __solve_fin_efficience(self, heat_transfer, convection_coefficient, theta_b):
+    def __m(self, convection_coefficient, thermal_conductivity):
+        # m² = hP/(kA_c)
+        return math.sqrt((convection_coefficient * self.perimeter)/(thermal_conductivity * self.area))
+
+    def __solve_fin_effectiveness(self, heat_transfer, convection_coefficient, theta_b):
+        # Effectiveness: ε = q_fin / (h A_c θb), heat transfer compared with the bare base area.
         return heat_transfer / (convection_coefficient * self.area * theta_b)
+
+    def __solve_fin_efficiency(self, heat_transfer, convection_coefficient, theta_b, length):
+        # Efficiency: η = q_fin / (h A_fin θb), A_fin being the fin surface area.
+        # The infinite fin has no finite surface area, so its efficiency is reported as None.
+        if self.solver_method == 1:
+            return None
+        fin_area = self.perimeter * length
+        if self.solver_method == 4:
+            fin_area += self.area
+        return heat_transfer / (convection_coefficient * fin_area * theta_b)
     
     def __validations(self, data):
         self.validates("Solver",self.solver_method, validation="presence", message=_("Solver Method Must Be Selected"))
@@ -191,7 +208,7 @@ class FinSolver(DataValidation):
         self.validates("Length",data.get("fin_length"), validation="greather_than",base_number=0)
         self.validates("Convection Coefficient",data.get("convection_coefficient"), validation="greather_than",base_number=0)
         self.validates("Nodes",data.get("node_count"), validation="greather_than",base_number=9)
-        self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials())
+        self.validates("Material",data.get("fin_material"), validation="includes",array=PropertiesGetter().list_materials(category="metal"))
         self.validates("Enviroment Temperature", data.get("env_temperature"), validation="presence")
         if self.solver_method == 3:
             self.validates("Specified Temperature",data.get("temp_end_fin"), validation="presence")

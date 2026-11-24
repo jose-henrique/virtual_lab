@@ -1,4 +1,6 @@
 class FinChartAdapter:
+    x_label = "Relative length x/L ()"
+
     def __init__(self):
         pass
 

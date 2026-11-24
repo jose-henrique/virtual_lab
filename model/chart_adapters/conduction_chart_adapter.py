@@ -1,4 +1,6 @@
 class ConductionChartAdapter:
+    x_label = "Position (m)"
+
     def get_chart_data(self, data):
         profile = data.get("results", {}).get("profile", [])
         return [

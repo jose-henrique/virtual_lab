@@ -1,6 +1,14 @@
 from gettext import gettext as _
 
 
+def _mean_bulk_temperature(results):
+    inlet = results.get("inlet_temperature")
+    outlet = results.get("outlet_temperature")
+    if inlet is None or outlet is None:
+        return None
+    return (inlet + outlet) / 2
+
+
 class ForcedConvectionSerializer:
     def serialize(self, payload):
         results = payload.get("results", {})
@@ -20,6 +28,9 @@ class ForcedConvectionSerializer:
             [_("Reynolds Number"), results.get("reynolds_number")],
             [_("Prandtl Number"), results.get("prandtl_number")],
             [_("Nusselt Number"), results.get("nusselt_number")],
+            [_("Thermal Entry Length (m)"), results.get("thermal_entry_length")],
+            [_("Thermally Developing Flow (L < Lt)"), results.get("thermally_developing")],
+            [_("Mean Bulk Temperature (°C)"), _mean_bulk_temperature(results)],
             [_("Convection Coefficient (W/m².K)"), results.get("heat_transfer_coefficient")],
             [_("Mass Flow Rate (kg/s)"), results.get("mass_flow_rate")],
             [_("Outlet Temperature (°C)"), results.get("outlet_temperature")],

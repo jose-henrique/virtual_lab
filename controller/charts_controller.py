@@ -16,9 +16,22 @@ class ChartsController:
         results =self.analyze_model.generate_chart_data(experiment_a_id, experiment_b_id)
 
         if results:
-            self.data_chart.update_chart(results.get("experiment_a"), results.get("experiment_b"))
+            self.data_chart.update_chart(
+                results.get("experiment_a"),
+                results.get("experiment_b"),
+                self.__x_axis_label(results.get("x_labels", {})),
+            )
         else:
             self.__error_modal(self.analyze_model.errors)
     
+    def __x_axis_label(self, x_labels):
+        # Each analysis type defines its own X axis; when two different types are compared, show both.
+        labels = []
+        for key in ("experiment_a", "experiment_b"):
+            label = x_labels.get(key)
+            if label and label not in labels:
+                labels.append(label)
+        return " | ".join(_(label) for label in labels)
+
     def __error_modal(self, errors):
         self.error_modal.show_errors(errors)  

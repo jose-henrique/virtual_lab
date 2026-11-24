@@ -29,7 +29,11 @@ class ConductionSerializer:
                 heat_rates[index] if index < len(heat_rates) else None,
             ])
 
+        profile = results.get("profile", [])
+        if results.get("configuration") == "parallel" or not profile:
+            return rows
+
         rows.extend([[], [_("Position (m)"), _("Temperature (°C)"), _("Heat Rate (W)")]])
-        for point in results.get("profile", []):
+        for point in profile:
             rows.append([point.get("position"), point.get("temperature"), point.get("heat_rate")])
         return rows

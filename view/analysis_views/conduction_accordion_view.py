@@ -4,6 +4,7 @@ from gettext import gettext as _
 from controller.conduction_analyses_controller import ConductionAnalysesController
 from model.material_property_getter import PropertiesGetter
 from view.components.input_components import InputComponents
+from view.error_modal import ErrorModal
 
 
 class ConductionAccordionView:
@@ -22,8 +23,8 @@ class ConductionAccordionView:
         with dpg.child_window(parent=self.parent, width=-1, height=-1, show=False, tag=f"conduction_options_{self.unique_id}"):
             dpg.add_combo([_("Series"), _("Parallel")], default_value=_("Series"),
                           tag=self.__register_field("configuration"), callback=self._on_input_changed)
-            self.input_components.input_float(self.__register_field("hot_temperature"), "°C", 0.5, "Hot temperature", 0, 1000, default_val=100, callback=self._on_input_changed)
-            self.input_components.input_float(self.__register_field("cold_temperature"), "°C", 0.5, "Cold temperature", 0, 1000, default_val=100, callback=self._on_input_changed)
+            self.input_components.input_float(self.__register_field("hot_temperature"), "°C", 0.5, "Hot temperature", -273.15, 2000, default_val=100, callback=self._on_input_changed)
+            self.input_components.input_float(self.__register_field("cold_temperature"), "°C", 0.5, "Cold temperature", -273.15, 2000, default_val=20, callback=self._on_input_changed)
             self.input_components.input_float(self.__register_field("time"), "s", 0.5, "Time", 0.0001, 1000, default_val=10, callback=self._on_input_changed)
             dpg.add_button(label=_("Add layer"), callback=self._add_layer)
             with dpg.child_window(height=-1, tag=self.layer_scroll):
@@ -42,6 +43,8 @@ class ConductionAccordionView:
         response = self._solve_current_data(save=True)
         if response["status"] == 0:
             self.canvas.show_results(response["results"])
+        else:
+            ErrorModal().show_errors(response["errors"])
 
     def _solve_current_data(self, save=False):
         data = {
@@ -68,10 +71,24 @@ class ConductionAccordionView:
         self._update_visualization()
 
     def get_raw_values(self):
-        return None
+        values = {
+            field: dpg.get_value(f"{field}_{self.unique_id}")
+            for field in self.tracked_fields
+            if dpg.does_item_exist(f"{field}_{self.unique_id}")
+        }
+        values["layer_count"] = len(self.layers)
+        return values
 
     def set_raw_values(self, data):
-        return None
+        if not data:
+            return
+        while len(self.layers) < data.get("layer_count", 0):
+            self._add_layer()
+        for key, value in data.items():
+            tag = f"{key}_{self.unique_id}"
+            if dpg.does_item_exist(tag):
+                dpg.set_value(tag, value)
+        self._update_visualization()
 
     def _add_layer(self, sender=None, app_data=None, user_data=None):
         index = len(self.layers) + 1
